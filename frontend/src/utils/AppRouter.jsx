@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from '@/components/common/Header/Header';
 import Footer from '@/components/common/Footer/Footer';
 import HomePage from '@/pages/HomePage';
+import CollectionsPage from '@/pages/CollectionsPage/CollectionsPage';
 
 function ScrollToHashElement() {
   const { hash, pathname } = useLocation();
@@ -30,6 +31,7 @@ export default function AppRouter() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/collections" element={<CollectionsPage />} />
           </Routes>
         </main>
         <Footer />

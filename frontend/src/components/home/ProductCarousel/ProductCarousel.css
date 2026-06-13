@@ -19,7 +19,7 @@
 .carousel-nav-btn {
   width: 50px;
   height: 50px;
-  border: 1.5px solid var(--color-border-light);
+  border: 1px solid var(--color-border-light);
   background-color: transparent;
   display: flex;
   align-items: center;
@@ -73,7 +73,7 @@
   background-color: var(--color-gray-light);
   position: relative;
   overflow: hidden;
-  border: 1.5px solid var(--color-border-light); /* Sharp border matching other cards */
+  border: 1px solid var(--color-border-light); /* Sharp border matching other cards */
 }
 
 .product-img {

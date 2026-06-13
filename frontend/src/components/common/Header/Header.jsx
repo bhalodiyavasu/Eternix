@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import logoIcon from '@/assets/icons/logo.svg';
 import hamburgerIcon from '@/assets/icons/hamburger.svg';
 import searchIcon from '@/assets/icons/search.svg';
@@ -8,13 +8,17 @@ import profileIcon from '@/assets/icons/profile.svg';
 import './Header.css';
 
 export default function Header() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+  const isCollections = location.pathname === '/collections';
+
   return (
     <header className="header">
       <div className="header-top">
         <div className="header-left">
           <nav className="nav-links">
-            <Link to="/" className="nav-link active">HOME</Link>
-            <Link to="/#collections" className="nav-link">COLLECTIONS</Link>
+            <Link to="/" className={`nav-link ${isHome ? 'active' : ''}`}>HOME</Link>
+            <Link to="/collections" className={`nav-link ${isCollections ? 'active' : ''}`}>COLLECTIONS</Link>
             <Link to="/#new" className="nav-link">NEW</Link>
           </nav>
         </div>
@@ -36,18 +40,6 @@ export default function Header() {
           <button className="circular-btn profile-btn" aria-label="Profile">
             <img src={profileIcon} alt="" className="inverted-icon" />
           </button>
-        </div>
-      </div>
-
-      <div className="header-bottom">
-        <div className="search-bar">
-          <img src={searchIcon} className="search-icon" alt="" />
-          <input 
-            type="text" 
-            defaultValue="" 
-            className="search-input" 
-            aria-label="Search"
-          />
         </div>
       </div>
     </header>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import suitImg from '../../assets/extracted/image1_2_63.jpg';
-import coatImg from '../../assets/extracted/image10_2_63.jpg';
-import jacketImg from '../../assets/extracted/image11_2_63.jpg';
+import suitImg from '@/assets/extracted/image1_2_63.jpg';
+import coatImg from '@/assets/extracted/image10_2_63.jpg';
+import jacketImg from '@/assets/extracted/image11_2_63.jpg';
 
 import './Collections.css';
 

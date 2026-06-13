@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import model1 from '../../assets/extracted/image1_2_63.jpg';
-import model2 from '../../assets/extracted/image2_2_63.jpg';
+import model1 from '@/assets/extracted/image1_2_63.jpg';
+import model2 from '@/assets/extracted/image2_2_63.jpg';
 import './Hero.css';
 
 export default function Hero() {

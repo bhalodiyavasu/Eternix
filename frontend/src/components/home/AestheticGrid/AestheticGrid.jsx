@@ -1,8 +1,8 @@
 import React from 'react';
-import photo1 from '../../assets/extracted/image4_2_63.jpg';
-import photo2 from '../../assets/extracted/image3_2_63.jpg';
-import photo3 from '../../assets/extracted/image1_2_63.jpg';
-import photo4 from '../../assets/extracted/image5_2_63.png';
+import photo1 from '@/assets/extracted/image4_2_63.jpg';
+import photo2 from '@/assets/extracted/image3_2_63.jpg';
+import photo3 from '@/assets/extracted/image1_2_63.jpg';
+import photo4 from '@/assets/extracted/image5_2_63.png';
 import './AestheticGrid.css';
 
 export default function AestheticGrid() {

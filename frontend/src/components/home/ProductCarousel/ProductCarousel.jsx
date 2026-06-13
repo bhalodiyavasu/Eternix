@@ -1,11 +1,11 @@
 import React from 'react';
 
-import item1 from '../../assets/extracted/image7_2_63.jpg';
-import item2 from '../../assets/extracted/image6_2_63.jpg';
-import item3 from '../../assets/extracted/image8_2_63.jpg';
-import item4 from '../../assets/extracted/image9_2_63.jpg';
-import arrowLeft from '../../assets/icons/arrow-left.svg';
-import arrowRight from '../../assets/icons/arrow-right.svg';
+import item1 from '@/assets/extracted/image7_2_63.jpg';
+import item2 from '@/assets/extracted/image6_2_63.jpg';
+import item3 from '@/assets/extracted/image8_2_63.jpg';
+import item4 from '@/assets/extracted/image9_2_63.jpg';
+import arrowLeft from '@/assets/icons/arrow-left.svg';
+import arrowRight from '@/assets/icons/arrow-right.svg';
 
 import './ProductCarousel.css';
 

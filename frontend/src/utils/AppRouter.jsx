@@ -6,6 +6,7 @@ import HomePage from '@/pages/HomePage';
 import CollectionsPage from '@/pages/CollectionsPage/CollectionsPage';
 import CartPage from '@/pages/CartPage/CartPage';
 import CheckoutPage from '@/pages/CheckoutPage/CheckoutPage';
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage/PaymentSuccessPage';
 
 function ScrollToHashElement() {
   const { hash, pathname } = useLocation();
@@ -26,7 +27,7 @@ function ScrollToHashElement() {
 
 function AppLayout({ children }) {
   const location = useLocation();
-  const isCheckout = location.pathname === '/checkout';
+  const isCheckout = location.pathname === '/checkout' || location.pathname === '/payment-success';
 
   return (
     <div className="app-wrapper">
@@ -47,6 +48,7 @@ export default function AppRouter() {
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment-success" element={<PaymentSuccessPage />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>

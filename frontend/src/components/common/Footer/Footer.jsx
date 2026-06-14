@@ -1,10 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useToast } from '@/contexts/ToastContext';
 import './Footer.css';
 
 export default function Footer() {
-  const { showToast } = useToast();
 
   return (
     <footer className="footer">
@@ -31,14 +29,6 @@ export default function Footer() {
       </div>
 
       <div className="footer-watermark">Ecommerce</div>
-
-      {/* Temporary Toast Test Buttons */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', padding: '20px', borderTop: '1px solid var(--color-border-light)', flexWrap: 'wrap' }}>
-        <button onClick={() => showToast('success', 'This is a success message!')} style={{ padding: '8px 16px', cursor: 'pointer', border: '1px solid var(--color-black)', background: 'var(--color-white)', color: 'var(--color-black)' }}>TEST SUCCESS</button>
-        <button onClick={() => showToast('error', 'This is an error message!')} style={{ padding: '8px 16px', cursor: 'pointer', border: '1px solid var(--color-black)', background: 'var(--color-white)', color: 'var(--color-black)' }}>TEST ERROR</button>
-        <button onClick={() => showToast('info', 'This is an info message!')} style={{ padding: '8px 16px', cursor: 'pointer', border: '1px solid var(--color-black)', background: 'var(--color-white)', color: 'var(--color-black)' }}>TEST INFO</button>
-        <button onClick={() => showToast('warning', 'This is a warning message!')} style={{ padding: '8px 16px', cursor: 'pointer', border: '1px solid var(--color-black)', background: 'var(--color-white)', color: 'var(--color-black)' }}>TEST WARNING</button>
-      </div>
     </footer>
   );
 }

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/contexts/ToastContext';
 import { ALL_PRODUCTS } from '@/data/products';
-import Modal from '@/components/common/Modal/Modal';
 import './CheckoutPage.css';
 
 export default function CheckoutPage() {
@@ -44,10 +43,6 @@ export default function CheckoutPage() {
     zip: ''
   });
 
-  const [orderPlaced, setOrderPlaced] = useState(false);
-  const [orderId, setOrderId] = useState('');
-  const [showRazorpayModal, setShowRazorpayModal] = useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
 
   const handleInputChange = (e) => {
@@ -76,43 +71,25 @@ export default function CheckoutPage() {
     setActiveTab('payment');
   };
 
-  const triggerRazorpayPayment = () => {
-    setShowRazorpayModal(true);
-  };
-
   const handleCompletePayment = () => {
-    setIsProcessingPayment(true);
-    setTimeout(() => {
-      setIsProcessingPayment(false);
-      setShowRazorpayModal(false);
-      
-      // Generate a mock Order ID
-      const mockId = 'XIV-' + Math.floor(100000 + Math.random() * 900000);
-      setOrderId(mockId);
-      
-      showToast('success', 'ORDER PLACED SUCCESSFULLY!');
-      setOrderPlaced(true);
-      setCartItems([]); // Clear local preview list
-    }, 2000); // 2 second mock loading time
+    // Generate a mock Order ID
+    const mockId = 'XIV-' + Math.floor(100000 + Math.random() * 900000);
+    
+    showToast('success', 'ORDER PLACED SUCCESSFULLY!');
+    
+    // Redirect to separate payment success page, passing transaction metadata
+    navigate('/payment-success', {
+      state: {
+        orderId: mockId,
+        email: formData.email,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        phone: formData.phone,
+        address: `${formData.address}, ${formData.city}, ${formData.state} - ${formData.zip}, ${formData.country}`,
+        cartItems: cartItems,
+        cartTotal: cartTotal
+      }
+    });
   };
-
-  if (orderPlaced) {
-    return (
-      <div className="checkout-page-container success-view">
-        <div className="success-card">
-          <h1 className="success-title">THANK YOU FOR YOUR PURCHASE</h1>
-          <p className="success-order-id">ORDER ID: {orderId}</p>
-          <p className="success-desc">
-            Your order has been received and is currently processing. A confirmation email will be sent to <strong>{formData.email}</strong> shortly.
-          </p>
-          <div className="success-divider"></div>
-          <Link to="/" className="success-home-btn">
-            RETURN TO HOME
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="checkout-page-container">
@@ -303,11 +280,11 @@ export default function CheckoutPage() {
                     <button 
                       type="button" 
                       className="checkout-next-btn-custom payment-submit-btn-custom"
-                      onClick={triggerRazorpayPayment}
+                      onClick={handleCompletePayment}
                     >
                       <span>Pay Now</span>
-                      <svg width="40" height="12" viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 6H39M39 6L33 1M39 6L33 11" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg width="48" height="16" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M0 8H47M47 8L39 1M47 8L39 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </button>
                   </div>
@@ -373,105 +350,6 @@ export default function CheckoutPage() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Razorpay Integration Modal Overlay */}
-      {showRazorpayModal && (
-        <Modal
-          title={
-            "RAZORPAY SECURE CHECKOUT"
-          }
-          onClose={() => {
-            if (!isProcessingPayment) {
-              setShowRazorpayModal(false);
-            }
-          }}
-        >
-          {isProcessingPayment ? (
-            <div className="rp-loading-state">
-              <div className="rp-spinner"></div>
-              <p className="rp-loading-txt">PROCESSING SECURE TRANSACTION...</p>
-              <p className="rp-loading-subtxt">Please do not refresh or close this window.</p>
-            </div>
-          ) : (
-            <>
-              <div className="rp-order-summary-row">
-                <span className="rp-order-label">ORDER TOTAL</span>
-                <span className="rp-order-price">${cartTotal}.00</span>
-              </div>
-
-              <div className="rp-payment-methods">
-                <h4 className="rp-methods-title">SELECT PAYMENT METHOD</h4>
-                
-                <div 
-                  className={`rp-method-card ${selectedPaymentMethod === 'card' ? 'active' : ''}`}
-                  onClick={() => setSelectedPaymentMethod('card')}
-                >
-                  <input 
-                    type="radio" 
-                    id="card" 
-                    name="payment_method" 
-                    checked={selectedPaymentMethod === 'card'} 
-                    onChange={() => setSelectedPaymentMethod('card')}
-                  />
-                  <label htmlFor="card" onClick={(e) => e.stopPropagation()}>
-                    <strong>CREDIT / DEBIT CARD</strong>
-                    <span>Visa, Mastercard, RuPay, Maestro</span>
-                  </label>
-                </div>
-
-                <div 
-                  className={`rp-method-card ${selectedPaymentMethod === 'upi' ? 'active' : ''}`}
-                  onClick={() => setSelectedPaymentMethod('upi')}
-                >
-                  <input 
-                    type="radio" 
-                    id="upi" 
-                    name="payment_method" 
-                    checked={selectedPaymentMethod === 'upi'} 
-                    onChange={() => setSelectedPaymentMethod('upi')}
-                  />
-                  <label htmlFor="upi" onClick={(e) => e.stopPropagation()}>
-                    <strong>UPI / GOOGLE PAY / PHONEPE</strong>
-                    <span>Pay instantly via UPI App or ID</span>
-                  </label>
-                </div>
-
-                <div 
-                  className={`rp-method-card ${selectedPaymentMethod === 'netbanking' ? 'active' : ''}`}
-                  onClick={() => setSelectedPaymentMethod('netbanking')}
-                >
-                  <input 
-                    type="radio" 
-                    id="netbanking" 
-                    name="payment_method" 
-                    checked={selectedPaymentMethod === 'netbanking'} 
-                    onChange={() => setSelectedPaymentMethod('netbanking')}
-                  />
-                  <label htmlFor="netbanking" onClick={(e) => e.stopPropagation()}>
-                    <strong>NET BANKING</strong>
-                    <span>All major Indian banks available</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="rp-modal-actions">
-                <button 
-                  className="rp-btn-cancel" 
-                  onClick={() => setShowRazorpayModal(false)}
-                >
-                  CANCEL
-                </button>
-                <button 
-                  className="rp-btn-pay" 
-                  onClick={handleCompletePayment}
-                >
-                  PAY ${cartTotal}.00
-                </button>
-              </div>
-            </>
-          )}
-        </Modal>
       )}
     </div>
   );

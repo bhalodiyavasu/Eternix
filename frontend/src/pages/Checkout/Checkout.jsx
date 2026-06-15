@@ -54,9 +54,7 @@ export default function Checkout() {
   };
 
   const handleCompletePayment = () => {
-    const mockId = 'XIV-' + Math.floor(100000 + Math.random() * 900000);
-
-    showToast('success', 'ORDER PLACED SUCCESSFULLY!');
+    const mockId = 'NIX-' + Math.floor(100000 + Math.random() * 900000);
 
     navigate('/payment-success', {
       state: {

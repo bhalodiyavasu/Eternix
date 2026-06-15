@@ -42,7 +42,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="footer-watermark">Ecommerce</div>
+      <div className="footer-watermark">Eternix</div>
     </footer>
   );
 }

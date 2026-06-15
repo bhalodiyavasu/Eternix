@@ -14,7 +14,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleProfileClick = () => {
-    const session = localStorage.getItem('xiv_user_session');
+    const session = localStorage.getItem('nix_user_session');
     if (session) {
       navigate('/profile');
     } else {
@@ -49,7 +49,7 @@ export default function Header() {
 
         <div className="header-center">
           <Link to="/" className="logo-container" aria-label="Home">
-            <img src={logoIcon} className="logo-img" alt="XIV Logo" />
+            <img src={logoIcon} className="logo-img" alt="Eternix Logo" />
           </Link>
         </div>
 

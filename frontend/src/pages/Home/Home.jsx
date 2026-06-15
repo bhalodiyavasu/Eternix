@@ -209,7 +209,7 @@ export default function Home() {
       {/* 3. Collections Section */}
       <section className="collections-section" id="collections">
         <div className="collections-header">
-          <h2 className="section-title">XIV COLLECTIONS <span>23-24</span></h2>
+          <h2 className="section-title">NIX COLLECTIONS <span>23-24</span></h2>
         </div>
 
         <div className="collections-toolbar">

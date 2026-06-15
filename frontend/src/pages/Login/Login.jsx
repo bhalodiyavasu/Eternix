@@ -43,7 +43,7 @@ export default function Login() {
     if (loginData.email && loginData.password) {
       showToast('success', `WELCOME BACK!`);
       // Store mock user session
-      localStorage.setItem('xiv_user_session', JSON.stringify({ email: loginData.email }));
+      localStorage.setItem('nix_user_session', JSON.stringify({ email: loginData.email }));
       navigate('/profile');
     }
   };
@@ -82,7 +82,7 @@ export default function Login() {
             
             {/* Logo area */}
             <div className="login-logo-container" onClick={() => navigate('/')}>
-              <img src={logoIcon} alt="XIV Logo" className="login-logo-img" />
+              <img src={logoIcon} alt="Eternix Logo" className="login-logo-img" />
             </div>
 
             {activeTab === 'login' ? (
@@ -138,7 +138,7 @@ export default function Login() {
               </form>
             ) : (
               <form onSubmit={handleSignupSubmit} className="login-form-block animate-fade-in">
-                <h2 className="form-action-title">JOIN XIV</h2>
+                <h2 className="form-action-title">JOIN ETERNIX</h2>
                 <p className="form-action-subtitle">Create an account to track orders and save details.</p>
 
                 <div className="login-input-group">

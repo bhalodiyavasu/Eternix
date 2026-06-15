@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { DEFAULT_ORDER_DATA } from '@/data/mockData';
 import Button from '@/components/common/Button/Button';
 import './PaymentSuccess.css';
@@ -105,6 +105,7 @@ export default function PaymentSuccess() {
           <Button
             type="button" 
             variant="outline"
+            className="success-view-receipt-btn"
             onClick={() => setShowReceiptModal(true)}
           >
             VIEW ORDER RECEIPT
@@ -113,90 +114,107 @@ export default function PaymentSuccess() {
           <Button
             type="button" 
             variant="solid"
+            className="success-download-receipt-btn"
             onClick={handlePrint}
           >
             DOWNLOAD RECEIPT
           </Button>
 
-          <Link to="/collections" className="action-btn-primary">
+          <Button
+            to="/collections"
+            variant="solid"
+            className="success-continue-btn"
+          >
             CONTINUE SHOPPING
-          </Link>
+          </Button>
         </div>
       </div>
 
       {/* Printable / Visual Invoice Receipt Modal */}
-      {showReceiptModal && (
-        <div className="receipt-modal-overlay" onClick={() => setShowReceiptModal(false)}>
-          <div className="receipt-modal-box" onClick={(e) => e.stopPropagation()}>
-            <div className="receipt-header-row">
-              <div className="receipt-logo">XIV STORE</div>
-              <button className="receipt-close-btn" onClick={() => setShowReceiptModal(false)}>✕</button>
-            </div>
+      <div className={`receipt-modal-overlay ${showReceiptModal ? 'active' : ''}`} onClick={() => setShowReceiptModal(false)}>
+        <div className="receipt-modal-box" onClick={(e) => e.stopPropagation()}>
+          <div className="receipt-header-row">
+            <div className="receipt-logo">ETERNIX</div>
+            <button className="receipt-close-btn" onClick={() => setShowReceiptModal(false)}>✕</button>
+          </div>
 
-            <div className="receipt-bill-to">
-              <div>
-                <strong>BILL TO:</strong>
-                <p>{orderData.customerName}</p>
-                <p>{orderData.phone}</p>
-                <p>{orderData.address}</p>
-              </div>
-              <div className="receipt-meta-details">
-                <p><strong>ORDER ID:</strong> {orderData.orderId}</p>
-                <p><strong>DATE:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                <p><strong>STATUS:</strong> PAID (RAZORPAY)</p>
+          <div className="receipt-info-section">
+            <div className="receipt-bill-to-left">
+              <span className="bill-to-label">BILL TO</span>
+              <div className="bill-to-info">
+                <p className="customer-name">{orderData.customerName}</p>
+                <p className="customer-phone">{orderData.phone}</p>
+                <p className="customer-address">{orderData.address}</p>
               </div>
             </div>
 
-            <table className="receipt-table">
-              <thead>
-                <tr>
-                  <th>ITEM</th>
-                  <th>QTY</th>
-                  <th>PRICE</th>
-                  <th>AMOUNT</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderData.cartItems.map((item, idx) => (
-                  <tr key={idx}>
-                    <td>
-                      <div>{item.product.name}</div>
-                      <small style={{ color: '#666' }}>SIZE: {item.size} / COLOR: {item.color}</small>
-                    </td>
-                    <td>{item.quantity}</td>
-                    <td>${item.product.price}</td>
-                    <td>${item.product.price * item.quantity}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="receipt-totals">
-              <div className="receipt-total-row">
-                <span>SUBTOTAL:</span>
-                <span>${orderData.cartTotal}.00</span>
+            <div className="receipt-meta-details-right">
+              <div className="meta-row">
+                <span className="meta-label">ORDER ID</span>
+                <span className="meta-value">{orderData.orderId}</span>
               </div>
-              <div className="receipt-total-row">
-                <span>SHIPPING:</span>
-                <span>FREE</span>
+              <div className="meta-row">
+                <span className="meta-label">DATE</span>
+                <span className="meta-value">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               </div>
-              <div className="receipt-total-row final-amount">
-                <span>TOTAL:</span>
-                <span>${orderData.cartTotal}.00</span>
+              <div className="meta-row">
+                <span className="meta-label">STATUS</span>
+                <span className="meta-value">
+                  PAID — <span className="receipt-razorpay-txt">RAZORPAY</span>
+                </span>
               </div>
-            </div>
-
-            <div className="receipt-footer-msg">
-              <p>THANK YOU FOR SHOPPING WITH XIV STORE</p>
-              <p>If you have any questions, contact us at info@xiv-store.com</p>
-            </div>
-            
-            <div className="receipt-modal-actions-bar">
-              <Button variant="solid" onClick={handlePrint}>PRINT RECEIPT</Button>
             </div>
           </div>
+
+          <table className="receipt-table">
+            <thead>
+              <tr>
+                <th>ITEM</th>
+                <th>QTY</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderData.cartItems.map((item, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <div>{item.product.name}</div>
+                    <small style={{ color: '#666' }}>SIZE: {item.size} / COLOR: {item.color}</small>
+                  </td>
+                  <td>{item.quantity}</td>
+                  <td>${item.product.price}</td>
+                  <td>${item.product.price * item.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="receipt-totals">
+            <div className="receipt-total-row">
+              <span>SUBTOTAL:</span>
+              <span>${orderData.cartTotal}.00</span>
+            </div>
+            <div className="receipt-total-row">
+              <span>SHIPPING:</span>
+              <span>FREE</span>
+            </div>
+            <div className="receipt-total-row final-amount">
+              <span>TOTAL:</span>
+              <span>${orderData.cartTotal}.00</span>
+            </div>
+          </div>
+
+          <div className="receipt-footer-msg">
+            <p>THANK YOU FOR SHOPPING WITH ETERNIX</p>
+            <p>If you have any questions, contact us at info@eternix.com</p>
+          </div>
+          
+          <div className="receipt-modal-actions-bar">
+            <Button variant="solid" onClick={handlePrint}>PRINT RECEIPT</Button>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

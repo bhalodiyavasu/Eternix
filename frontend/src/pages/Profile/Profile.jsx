@@ -9,7 +9,7 @@ import './Profile.css';
 // Mock order history populated from ALL_PRODUCTS
 const MOCK_ORDERS = [
   {
-    id: 'XIV-843910',
+    id: 'NIX-843910',
     date: '10 JUN 2026',
     status: 'DELIVERED',
     total: 235.00,
@@ -20,7 +20,7 @@ const MOCK_ORDERS = [
     ]
   },
   {
-    id: 'XIV-329481',
+    id: 'NIX-329481',
     date: '24 MAY 2026',
     status: 'DELIVERED',
     total: 110.00,
@@ -68,7 +68,7 @@ export default function Profile() {
   const handleLogout = () => {
     setShowLogoutModal(false);
     // Clear mock session
-    localStorage.removeItem('xiv_user_session');
+    localStorage.removeItem('nix_user_session');
     showToast('success', 'LOGGED OUT SUCCESSFULLY.');
     navigate('/login');
   };

@@ -252,8 +252,8 @@ export const getCartItemsWithProducts = () => {
 
 // ─── Default Order Data (fallback for PaymentSuccessPage) ───────
 export const DEFAULT_ORDER_DATA = {
-  orderId: 'XIV-308420',
-  email: 'info@ecommerce.com',
+  orderId: 'NIX-308420',
+  email: 'info@eternix.com',
   customerName: 'VASU BHALODIYA',
   phone: '+91 98765 43210',
   address: '45 Fashion Blvd, Design District, Gujarat - 360001, India',

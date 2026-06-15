@@ -281,6 +281,18 @@
   flex: 1;
 }
 
+.success-action-buttons .success-download-receipt-btn.app-button--solid {
+  background-color: var(--color-blue-accent, #000e8a);
+  border-color: var(--color-blue-accent, #000e8a);
+  color: var(--color-white, #ffffff);
+}
+
+.success-action-buttons .success-continue-btn.app-button--solid {
+  background-color: var(--color-black, #000000);
+  border-color: var(--color-black, #000000);
+  color: var(--color-white, #ffffff);
+}
+
 /* Receipt Modal Styles */
 .receipt-modal-overlay {
   position: fixed;
@@ -289,13 +301,17 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 10000;
   backdrop-filter: blur(2px);
   padding: 20px;
   box-sizing: border-box;
+}
+
+.receipt-modal-overlay.active {
+  display: flex;
 }
 
 .receipt-modal-box {
@@ -338,31 +354,89 @@
   color: var(--color-black);
 }
 
-.receipt-bill-to {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  color: var(--color-black);
+.receipt-info-section {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 40px;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 25px;
   margin-bottom: 30px;
 }
 
-.receipt-bill-to strong {
-  display: block;
-  margin-bottom: 8px;
+.receipt-bill-to-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bill-to-label {
+  font-family: var(--font-sans);
   font-size: 9px;
+  font-weight: 700;
   color: #999;
+  text-transform: uppercase;
 }
 
-.receipt-bill-to p {
-  margin: 3px 0;
-  text-transform: none !important;
+.bill-to-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.receipt-meta-details p {
+.bill-to-info .customer-name {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-black);
   text-transform: uppercase !important;
+}
+
+.bill-to-info .customer-phone {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: #666;
+}
+
+.bill-to-info .customer-address {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: #555;
+  line-height: 1.5;
+  text-transform: none !important;
+  margin-top: 4px;
+}
+
+.receipt-meta-details-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 11px;
+}
+
+.meta-label {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.meta-value {
+  font-weight: 700;
+  color: var(--color-black);
   text-align: right;
+}
+
+.receipt-razorpay-txt {
+  color: var(--color-blue-accent, #000e8a);
+  font-weight: 800;
 }
 
 .receipt-table {
@@ -460,26 +534,46 @@
   body * {
     visibility: hidden;
   }
+  
   .receipt-modal-overlay,
   .receipt-modal-overlay * {
-    visibility: visible;
+    visibility: visible !important;
   }
+  
+  .success-noise,
+  .success-content-card {
+    display: none !important;
+  }
+
+  .success-page-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
   .receipt-modal-overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    background: transparent;
-    padding: 0;
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+    padding: 20mm 0 !important;
+    margin: 0 !important;
+    backdrop-filter: none !important;
   }
+
   .receipt-modal-box {
-    border: none;
-    box-shadow: none;
-    max-height: none;
-    width: 100%;
-    padding: 0;
+    border: none !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 580px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
   }
+
   .receipt-close-btn,
   .receipt-modal-actions-bar {
     display: none !important;

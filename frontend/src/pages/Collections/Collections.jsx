@@ -37,6 +37,29 @@ export default function Collections() {
     selectedStatuses: []
   });
 
+  const hasActiveFilters = 
+    filterData.searchQuery.trim() !== '' ||
+    filterData.selectedGenders.length > 0 ||
+    filterData.selectedColors.length > 0 ||
+    filterData.selectedSizes.length > 0 ||
+    filterData.selectedStatuses.length > 0 ||
+    filterData.selectedRatings.length > 0 ||
+    filterData.priceRange < 300;
+
+  const handleClearAll = () => {
+    setFilterData({
+      searchQuery: '',
+      selectedGenders: [],
+      selectedColors: [],
+      selectedSizes: [],
+      selectedTags: [],
+      sortBy: 'newest',
+      priceRange: 300,
+      selectedRatings: [],
+      selectedStatuses: []
+    });
+  };
+
   // ─── Consolidated Accordion State ────────────────────────────
   const [expandedSections, setExpandedSections] = useState({
     gender: true,
@@ -324,6 +347,57 @@ export default function Collections() {
             />
           </div>
         </div>
+
+        {/* Active Filters Display */}
+        {hasActiveFilters && (
+          <div className="active-filters-container">
+            {filterData.searchQuery.trim() !== '' && (
+              <span className="active-filter-tag">
+                Search: &ldquo;{filterData.searchQuery}&rdquo;
+                <button className="clear-tag-btn" onClick={() => setFilterData(prev => ({ ...prev, searchQuery: '' }))} aria-label="Clear Search">✕</button>
+              </span>
+            )}
+            {filterData.selectedGenders.map(gender => (
+              <span className="active-filter-tag" key={gender}>
+                {gender === 'men' ? 'MAN' : 'WOMAN'}
+                <button className="clear-tag-btn" onClick={() => toggleFilterItem('selectedGenders', gender)} aria-label={`Clear Gender ${gender}`}>✕</button>
+              </span>
+            ))}
+            {filterData.selectedColors.map(color => (
+              <span className="active-filter-tag" key={color}>
+                Color: {color}
+                <button className="clear-tag-btn" onClick={() => toggleFilterItem('selectedColors', color)} aria-label={`Clear Color ${color}`}>✕</button>
+              </span>
+            ))}
+            {filterData.selectedSizes.map(size => (
+              <span className="active-filter-tag" key={size}>
+                Size: {size}
+                <button className="clear-tag-btn" onClick={() => toggleFilterItem('selectedSizes', size)} aria-label={`Clear Size ${size}`}>✕</button>
+              </span>
+            ))}
+            {filterData.selectedStatuses.map(status => (
+              <span className="active-filter-tag" key={status}>
+                Status: {status === 'NEW' ? 'NEW IN' : 'BEST SELLERS'}
+                <button className="clear-tag-btn" onClick={() => toggleFilterItem('selectedStatuses', status)} aria-label={`Clear Status ${status}`}>✕</button>
+              </span>
+            ))}
+            {filterData.selectedRatings.map(rating => (
+              <span className="active-filter-tag" key={rating}>
+                Rating: {rating}★ &amp; Up
+                <button className="clear-tag-btn" onClick={() => toggleFilterItem('selectedRatings', rating)} aria-label={`Clear Rating ${rating}`}>✕</button>
+              </span>
+            ))}
+            {filterData.priceRange < 300 && (
+              <span className="active-filter-tag">
+                Under ${filterData.priceRange}
+                <button className="clear-tag-btn" onClick={() => setFilterData(prev => ({ ...prev, priceRange: 300 }))} aria-label="Clear Price Limit">✕</button>
+              </span>
+            )}
+            <button className="clear-all-filters-btn" onClick={handleClearAll}>
+              CLEAR ALL
+            </button>
+          </div>
+        )}
 
         {/* Product Grid */}
         <div className="collections-grid">

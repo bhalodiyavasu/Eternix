@@ -6,12 +6,12 @@ const registerUser = async (req, res) => {
     const { name, email, password } = req.body
 
     if(!name || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ status: "FAILURE", message: "All fields are required" });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({message: "Email already exist"});
+      return res.status(400).json({ status: "FAILURE", message: "Email already exist" });
     }
 
     const hashedPassword = await bcrypt.hash(String(password), 10);
@@ -23,6 +23,7 @@ const registerUser = async (req, res) => {
     });
 
     res.status(201).json({
+      status: "SUCCESS",
       message: "User registered successfully",
       user: {
         id: user._id,
@@ -31,7 +32,7 @@ const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ status: "FAILURE", message: error.message });
   }
 };
 

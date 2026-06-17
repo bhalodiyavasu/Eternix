@@ -250,7 +250,7 @@
   text-transform: uppercase;
   text-decoration: none;
   color: var(--color-black);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   transition: opacity 0.2s ease;
   width: fit-content;
 }

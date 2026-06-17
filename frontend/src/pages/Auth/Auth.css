@@ -67,7 +67,7 @@
   font-family: var(--font-primary);
   font-size: clamp(28px, 3vw, 40px);
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   line-height: 1.15;
   text-transform: uppercase;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -125,7 +125,7 @@
   font-weight: 800;
   color: var(--color-black, #000000);
   margin: 0;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .form-action-subtitle {
@@ -186,7 +186,7 @@
   cursor: pointer;
   text-decoration: none;
   transition: color 0.2s ease;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .forgot-lnk:hover {
@@ -242,7 +242,7 @@
   font-weight: 700;
   color: var(--color-gray-dark, #787878);
   line-height: 1.6;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   margin: 0;
 }
 
@@ -348,7 +348,7 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--color-gray-dark, #555555);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
 }
 

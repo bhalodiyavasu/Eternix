@@ -134,7 +134,7 @@
   color: var(--color-gray-dark);
   margin-bottom: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .bc-home-link {
@@ -288,7 +288,7 @@
   font-size: 10px;
   font-weight: 600;
   color: var(--color-gray-dark);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .order-col-val {
@@ -457,7 +457,7 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--color-gray-dark);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   margin: 0;
 }
 

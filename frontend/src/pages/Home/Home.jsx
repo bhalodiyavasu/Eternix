@@ -1,145 +1,102 @@
-import React, { useState, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Button from '@/components/common/Button/Button';
 import ProductQuickView from '@/components/common/ProductQuickView/ProductQuickView';
-import { ALL_PRODUCTS } from '@/data/mockData';
-
-// Image assets for Hero
+import { useGetProductsQuery } from '@/store/actions/productActions';
 import model1 from '@/assets/extracted/image1_2_63.jpg';
 import model2 from '@/assets/extracted/image2_2_63.jpg';
-
-// Image assets for Product Carousel
-import item1 from '@/assets/extracted/image7_2_63.jpg';
-import item2 from '@/assets/extracted/image6_2_63.jpg';
-import item3 from '@/assets/extracted/image8_2_63.jpg';
-import item4 from '@/assets/extracted/image9_2_63.jpg';
 import arrowLeft from '@/assets/icons/arrow-left.svg';
 import arrowRight from '@/assets/icons/arrow-right.svg';
-
-// Image assets for Collections
-import suitImg from '@/assets/extracted/image1_2_63.jpg';
-import coatImg from '@/assets/extracted/image10_2_63.jpg';
-import jacketImg from '@/assets/extracted/image11_2_63.jpg';
-
-// Image assets for Aesthetic Grid
 import photo1 from '@/assets/extracted/image4_2_63.jpg';
 import photo2 from '@/assets/extracted/image3_2_63.jpg';
 import photo3 from '@/assets/extracted/image1_2_63.jpg';
 import photo4 from '@/assets/extracted/image5_2_63.png';
-
-// CSS styling sheet import to preserve exact layout aesthetics
 import './Home.css';
 
-// Carousel Local Data
-const CAROUSEL_PRODUCTS = [
-  {
-    id: 4,
-    image: item1,
-    name: 'EMBROIDERED SEERSUCKER SHIRT',
-    price: '$ 99',
-    category: 'NEW IN / SHIRTS'
-  },
-  {
-    id: 5,
-    image: item2,
-    name: 'CASUAL OVERSIZED LINEN BLAZER',
-    price: '$ 149',
-    category: 'NEW IN / JACKETS'
-  },
-  {
-    id: 6,
-    image: item3,
-    name: 'RELAXED COTTON DRAWSTRING TROUSERS',
-    price: '$ 89',
-    category: 'NEW IN / PANTS'
-  },
-  {
-    id: 7,
-    image: item4,
-    name: 'CLASSIC LEATHER STRAP SANDALS',
-    price: '$ 120',
-    category: 'NEW IN / ACCESSORIES'
-  },
-  {
-    id: 8,
-    image: item1,
-    name: 'TEXTURED CAMP COLLAR SHIRT',
-    price: '$ 79',
-    category: 'NEW IN / SHIRTS'
-  },
-  {
-    id: 9,
-    image: item2,
-    name: 'RELAXED LINEN TROUSERS',
-    price: '$ 110',
-    category: 'NEW IN / PANTS'
-  }
-];
-
-// Collections Local Data
-const COLLECTIONS_PRODUCTS = [
-  {
-    id: 1,
-    image: coatImg,
-    name: 'LINEN TRENCH COAT',
-    price: '$ 199',
-    category: 'MEN / OUTERWEAR',
-    gender: 'men'
-  },
-  {
-    id: 2,
-    image: suitImg,
-    name: 'DOUBLE BREASTED WOOL SUIT',
-    price: '$ 199',
-    category: 'WOMEN / SUITS',
-    gender: 'women'
-  },
-  {
-    id: 3,
-    image: jacketImg,
-    name: 'STRUCTURED OVERSIZED JACKET',
-    price: '$ 199',
-    category: 'WOMEN / OUTERWEAR',
-    gender: 'women'
-  }
-];
-
 export default function Home() {
-  const carouselRef = useRef(null);
-  
-  // Carousel State
+  const carouselRef  = useRef(null);
+  const colSliderRef = useRef(null);
+
+  const { data: apiData } = useGetProductsQuery();
+
+  const newThisWeekProducts = useMemo(() => {
+    if (!apiData?.products) return [];
+    return apiData.products.filter(p => {
+      const s = p.status?.toLowerCase();
+      return s === 'new in' || s === 'new';
+    });
+  }, [apiData]);
+
   const [quickViewProductId, setQuickViewProductId] = useState(null);
+  const [activeFilter, setActiveFilter]             = useState('men');
+  const [canScrollLeft,  setCanScrollLeft]  = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [hasOverflow,    setHasOverflow]    = useState(false);
+  const [colCanScrollLeft,  setColCanScrollLeft]  = useState(false);
+  const [colCanScrollRight, setColCanScrollRight] = useState(false);
 
-  // Collections State
-  const [activeFilter, setActiveFilter] = useState('all');
+  const collectionsByGender = useMemo(() => {
+    if (!apiData?.products) return [];
+    return apiData.products
+      .filter(p => {
+        const g = p.gender?.toLowerCase();
+        if (activeFilter === 'men')   return g === 'men'   || g === 'man';
+        if (activeFilter === 'women') return g === 'women' || g === 'woman';
+        if (activeFilter === 'kid')   return g === 'kid'   || g === 'kids';
+        return false;
+      })
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      .slice(0, 8);
+  }, [apiData, activeFilter]);
 
-  // Carousel scroll actions
-  const handleScrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -330, behavior: 'smooth' });
-    }
+  const totalProductCount = apiData?.products?.length ?? 0;
+
+  const updateScrollState = () => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const overflow = el.scrollWidth > el.clientWidth + 1;
+    setHasOverflow(overflow);
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   };
 
-  const handleScrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 330, behavior: 'smooth' });
-    }
+  const updateColScrollState = () => {
+    const el = colSliderRef.current;
+    if (!el) return;
+    setColCanScrollLeft(el.scrollLeft > 0);
+    setColCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
   };
 
+  useEffect(() => {
+    updateScrollState();
+    window.addEventListener('resize', updateScrollState);
+    return () => window.removeEventListener('resize', updateScrollState);
+  }, [newThisWeekProducts]);
+
+  useEffect(() => {
+    const el = colSliderRef.current;
+    if (!el) return;
+    el.scrollLeft = 0;
+    setColCanScrollLeft(false);
+    setColCanScrollRight(el.scrollWidth > el.clientWidth + 1);
+    window.addEventListener('resize', updateColScrollState);
+    return () => window.removeEventListener('resize', updateColScrollState);
+  }, [collectionsByGender]);
+
+  const handleScrollLeft     = () => carouselRef.current?.scrollBy({ left: -330, behavior: 'smooth' });
+  const handleScrollRight    = () => carouselRef.current?.scrollBy({ left:  330, behavior: 'smooth' });
+  const handleColScrollLeft  = () => colSliderRef.current?.scrollBy({ left: -330, behavior: 'smooth' });
+  const handleColScrollRight = () => colSliderRef.current?.scrollBy({ left:  330, behavior: 'smooth' });
+
+  const navigate = useNavigate();
   const location = useLocation();
   const justLoggedIn = location.state?.justLoggedIn;
 
-  // Filter collections calculation
-  const filteredCollectionsProducts = activeFilter === 'all' 
-    ? COLLECTIONS_PRODUCTS 
-    : COLLECTIONS_PRODUCTS.filter(p => p.gender === activeFilter);
-
   return (
     <div className={justLoggedIn ? 'home-slide-in-up' : ''}>
-      {/* 1. Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <h2 className="hero-new-title">NEW COLLECTION</h2>
-          
           <div className="hero-bottom-controls">
             <Link to="/collections" className="hero-btn">
               <span>SHOP NOW</span>
@@ -149,7 +106,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-
         <div className="hero-images">
           <div className="hero-img-wrapper img-left">
             <img src={model1} alt="Summer Collection Model Left" className="hero-img" />
@@ -160,106 +116,148 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Product Carousel Section */}
       <section className="carousel-section" id="new">
         <div className="carousel-header">
           <h2 className="section-title">
-            NEW THIS WEEK <span>(50)</span>
+            NEW THIS WEEK <span>({newThisWeekProducts.length})</span>
           </h2>
-          <div className="carousel-nav">
-            <button className="carousel-nav-btn btn-left" onClick={handleScrollLeft} aria-label="Scroll carousel left">
-              <img src={arrowLeft} alt="" />
-            </button>
-            <button className="carousel-nav-btn btn-right" onClick={handleScrollRight} aria-label="Scroll carousel right">
-              <img src={arrowRight} alt="" />
-            </button>
+          {hasOverflow && (
+            <div className="carousel-nav">
+              <button className="carousel-nav-btn btn-left" onClick={handleScrollLeft} aria-label="Scroll carousel left" disabled={!canScrollLeft}>
+                <img src={arrowLeft} alt="" />
+              </button>
+              <button className="carousel-nav-btn btn-right" onClick={handleScrollRight} aria-label="Scroll carousel right" disabled={!canScrollRight}>
+                <img src={arrowRight} alt="" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {newThisWeekProducts.length === 0 ? (
+          <div className="carousel-empty">
+            <span className="carousel-empty-text">NO NEW PRODUCTS THIS WEEK</span>
+          </div>
+        ) : (
+          <div className="carousel-container" ref={carouselRef} onScroll={updateScrollState}>
+            {newThisWeekProducts.map((prod) => (
+              <div className="product-card-link" key={prod._id} onClick={() => setQuickViewProductId(prod._id)}>
+                <div className="product-card">
+                  <div className="product-img-container">
+                    <img src={prod.image} alt={prod.name} className="product-img" />
+                  </div>
+                  <div className="product-info">
+                    <div className="product-meta">
+                      <span className="product-category">{prod.gender?.toUpperCase()} / {prod.category?.toUpperCase()}</span>
+                      <span className="product-price">$ {prod.price}</span>
+                    </div>
+                    <h3 className="product-name">{prod.name}</h3>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+      </section>
+
+      <section className="collections-section" id="collections">
+        <div className="carousel-header">
+          <div>
+            <h2 className="section-title">NIX COLLECTIONS <span>23-24</span></h2>
+          </div>
+          <div className="col-slider-controls">
+            <div className="filter-group">
+              <button className={`filter-btn ${activeFilter === 'men' ? 'active' : ''}`} onClick={() => setActiveFilter('men')}>MEN</button>
+              <button className={`filter-btn ${activeFilter === 'women' ? 'active' : ''}`} onClick={() => setActiveFilter('women')}>WOMEN</button>
+              <button className={`filter-btn ${activeFilter === 'kid' ? 'active' : ''}`} onClick={() => setActiveFilter('kid')}>KID</button>
+            </div>
+            <div className="carousel-nav">
+              <button className="carousel-nav-btn" onClick={handleColScrollLeft} disabled={!colCanScrollLeft} aria-label="Scroll left">
+                <img src={arrowLeft} alt="" />
+              </button>
+              <button className="carousel-nav-btn" onClick={handleColScrollRight} disabled={!colCanScrollRight} aria-label="Scroll right">
+                <img src={arrowRight} alt="" />
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="carousel-container" ref={carouselRef}>
-          {CAROUSEL_PRODUCTS.map((prod) => (
-            <div 
-              className="product-card-link" 
-              key={prod.id}
-              onClick={() => setQuickViewProductId(prod.id)}
-            >
-              <div className="product-card">
-                <div className="product-img-container">
-                  <img src={prod.image} alt={prod.name} className="product-img" />
-                </div>
-                <div className="product-info">
-                  <div className="product-meta">
-                    <span className="product-category">{prod.category}</span>
-                    <span className="product-price">{prod.price}</span>
+        {collectionsByGender.length === 0 ? (
+          <div className="col-slider-empty">
+            <span>NO PRODUCTS FOUND</span>
+          </div>
+        ) : (
+          <div className="col-slider-container" ref={colSliderRef} onScroll={updateColScrollState}>
+            {collectionsByGender.map((prod) => (
+              <div className="product-card-link" key={prod._id || prod.id} onClick={() => setQuickViewProductId(prod._id || prod.id)}>
+                <div className="product-card">
+                  <div className="product-img-container">
+                    <img src={prod.image} alt={prod.name} className="product-img" />
                   </div>
-                  <h3 className="product-name">{prod.name}</h3>
+                  <div className="product-info">
+                    <div className="product-meta">
+                      <span className="product-category">{prod.gender?.toUpperCase()} / {prod.category?.toUpperCase()}</span>
+                      <span className="product-price">$ {prod.price}</span>
+                    </div>
+                    <h3 className="product-name">{prod.name}</h3>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Quick View Modal */}
-        {quickViewProductId && (
-          <ProductQuickView 
-            product={ALL_PRODUCTS.find(p => p.id === quickViewProductId) || CAROUSEL_PRODUCTS.find(p => p.id === quickViewProductId)} 
-            onClose={() => setQuickViewProductId(null)} 
-          />
+            ))}
+          </div>
         )}
       </section>
 
-      {/* 3. Collections Section */}
-      <section className="collections-section" id="collections">
-        <div className="collections-header">
-          <h2 className="section-title">NIX COLLECTIONS <span>23-24</span></h2>
-        </div>
-
-        <div className="collections-toolbar">
-          <div className="filter-group">
-            <button 
-              className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('all')}
-            >
-              (ALL)
-            </button>
-            <button 
-              className={`filter-btn ${activeFilter === 'men' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('men')}
-            >
-              MEN
-            </button>
-            <button 
-              className={`filter-btn ${activeFilter === 'women' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('women')}
-            >
-              WOMEN
-            </button>
-            <button 
-              className={`filter-btn ${activeFilter === 'kid' ? 'active' : ''}`}
-              onClick={() => setActiveFilter('kid')}
-            >
-              KID
-            </button>
+      <section className="ticker-section">
+        <div className="ticker-track">
+          <div className="ticker-content">
+            <span>PREMIUM QUALITY</span><span className="ticker-dot">·</span>
+            <span>TIMELESS DESIGN</span><span className="ticker-dot">·</span>
+            <span>SINCE 2023</span><span className="ticker-dot">·</span>
+            <span>NIX FASHION</span><span className="ticker-dot">·</span>
+            <span>CRAFTED WITH CARE</span><span className="ticker-dot">·</span>
+            <span>WEAR YOUR STORY</span><span className="ticker-dot">·</span>
+            <span>MADE TO LAST</span><span className="ticker-dot">·</span>
+            <span>DEFINE YOUR STYLE</span><span className="ticker-dot">·</span>
+            <span>PREMIUM QUALITY</span><span className="ticker-dot">·</span>
+            <span>TIMELESS DESIGN</span><span className="ticker-dot">·</span>
+            <span>SINCE 2023</span><span className="ticker-dot">·</span>
+            <span>NIX FASHION</span><span className="ticker-dot">·</span>
+            <span>CRAFTED WITH CARE</span><span className="ticker-dot">·</span>
+            <span>WEAR YOUR STORY</span><span className="ticker-dot">·</span>
+            <span>MADE TO LAST</span><span className="ticker-dot">·</span>
+            <span>DEFINE YOUR STYLE</span><span className="ticker-dot">·</span>
           </div>
-        </div>
-
-        <div className="collections-grid">
-          {filteredCollectionsProducts.map((prod) => (
-            <div className="grid-card" key={prod.id}>
-              <div className="grid-img-container">
-                <img src={prod.image} alt={prod.name} className="grid-img" />
-              </div>
-              <div className="grid-info">
-                <span className="grid-category">{prod.category}</span>
-                <h3 className="grid-name">{prod.name}</h3>
-                <span className="grid-price">{prod.price}</span>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
-      {/* 4. Approach Section */}
+      <section className="universe-section">
+        <div className="universe-inner">
+          <div className="universe-left">
+            <span className="universe-tag">EST. 2023</span>
+            <h2 className="universe-title">THE NIX<br />UNIVERSE</h2>
+            <p className="universe-sub">Where fashion meets identity. Every stitch tells a story worth wearing.</p>
+            <Button variant="unstyled" onClick={() => navigate('/collections')} style={{ color: '#fff' }}>EXPLORE ALL</Button>
+          </div>
+          <div className="universe-right">
+            <div className="universe-stat">
+              <span className="stat-num">500+</span>
+              <span className="stat-label">STYLES</span>
+            </div>
+            <div className="universe-divider" />
+            <div className="universe-stat">
+              <span className="stat-num">{totalProductCount}</span>
+              <span className="stat-label">PRODUCTS</span>
+            </div>
+            <div className="universe-divider" />
+            <div className="universe-stat">
+              <span className="stat-num">10K+</span>
+              <span className="stat-label">CUSTOMERS</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="approach-section">
         <div className="approach-container">
           <h2 className="section-title">OUR APPROACH TO FASHION DESIGN</h2>
@@ -274,7 +272,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Aesthetic Grid Section */}
       <section className="aesthetic-section">
         <div className="aesthetic-grid">
           <div className="aesthetic-col col-1">
@@ -282,19 +279,16 @@ export default function Home() {
               <img src={photo1} alt="Aesthetic style 1" className="aesthetic-img" />
             </div>
           </div>
-          
           <div className="aesthetic-col col-2">
             <div className="aesthetic-img-wrapper">
               <img src={photo2} alt="Aesthetic style 2" className="aesthetic-img" />
             </div>
           </div>
-
           <div className="aesthetic-col col-3">
             <div className="aesthetic-img-wrapper">
               <img src={photo3} alt="Aesthetic style 3" className="aesthetic-img" />
             </div>
           </div>
-
           <div className="aesthetic-col col-4">
             <div className="aesthetic-img-wrapper">
               <img src={photo4} alt="Aesthetic style 4" className="aesthetic-img" />
@@ -302,6 +296,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {quickViewProductId && (
+        <ProductQuickView productId={quickViewProductId} onClose={() => setQuickViewProductId(null)} />
+      )}
     </div>
   );
 }

@@ -211,6 +211,37 @@
   filter: invert(1);
 }
 
+.carousel-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.carousel-nav-btn:disabled:hover {
+  background-color: transparent;
+  border-color: var(--color-border-light);
+}
+
+.carousel-nav-btn:disabled:hover img {
+  filter: none;
+}
+
+.carousel-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  width: 100%;
+}
+
+.carousel-empty-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #888;
+  text-transform: uppercase;
+}
+
 /* Carousel container & cards */
 .carousel-container {
   display: flex;
@@ -328,6 +359,7 @@
   padding: 80px 50px;
   display: flex;
   flex-direction: column;
+  gap: 30px;
   background: transparent;
 }
 
@@ -411,12 +443,13 @@
   height: 12px;
 }
 
-/* 3-column grid */
-.collections-grid {
+/* 4-column grid */
+.home-collections-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  column-gap: 42px;
+  grid-template-columns: repeat(5, 303px);
+  column-gap: 27px;
   row-gap: 50px;
+  justify-content: center;
 }
 
 .grid-card {
@@ -427,11 +460,11 @@
 }
 
 .grid-img-container {
-  height: 375px;
+  height: 312px;
   background-color: var(--color-gray-light);
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--color-border-light); /* Sharp border matching other cards */
+  border: 1px solid var(--color-border-light);
 }
 
 .grid-img {
@@ -475,32 +508,217 @@
   color: var(--color-black);
 }
 
-/* Responsive adjustment */
+.col-slider-controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.col-slider-container {
+  display: flex;
+  gap: 27px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.col-slider-container::-webkit-scrollbar {
+  display: none;
+}
+
+.col-slider-empty {
+  display: flex;
+  align-items: center;
+  height: 327px;
+}
+
+.col-slider-empty span {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #888;
+  text-transform: uppercase;
+}
+
 @media (max-width: 900px) {
   .collections-section {
     padding: 40px 20px;
   }
-  .collections-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+  .col-slider-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
-  .grid-img-container {
-    height: 300px;
+}
+
+
+/* ==========================================================================
+   4. MARQUEE TICKER SECTION
+   ========================================================================== */
+.ticker-section {
+  overflow: hidden;
+  background: #0a0a0a;
+  padding: 16px 0;
+}
+
+.ticker-track {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ticker-content {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  white-space: nowrap;
+  animation: ticker-scroll 22s linear infinite;
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-content span {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #fff;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.ticker-dot {
+  color: #666 !important;
+  font-size: 20px !important;
+  line-height: 1;
+}
+
+
+/* ==========================================================================
+   5. NIX UNIVERSE SECTION
+   ========================================================================== */
+.universe-section {
+  background: #0a0a0a;
+  padding: 100px 50px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.universe-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 60px;
+}
+
+.universe-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.universe-tag {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: #555;
+  text-transform: uppercase;
+}
+
+.universe-title {
+  font-family: var(--font-primary);
+  font-size: 80px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 0.9;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.universe-sub {
+  font-size: 16px;
+  color: #777;
+  max-width: 340px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+
+.universe-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.universe-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 48px;
+  text-align: center;
+}
+
+.universe-divider {
+  width: 1px;
+  height: 80px;
+  background: #222;
+  flex-shrink: 0;
+}
+
+.stat-num {
+  font-family: var(--font-primary);
+  font-size: 54px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #444;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1000px) {
+  .universe-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 50px;
+  }
+  .universe-title {
+    font-size: 56px;
   }
 }
 
 @media (max-width: 600px) {
-  .collections-grid {
-    grid-template-columns: 1fr;
+  .universe-section {
+    padding: 60px 20px;
   }
-  .collections-toolbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+  .universe-title {
+    font-size: 42px;
   }
-  .grid-add-btn {
-    opacity: 1;
-    transform: none;
+  .universe-right {
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+  .universe-divider {
+    display: none;
+  }
+  .universe-stat {
+    padding: 0 20px;
   }
 }
 

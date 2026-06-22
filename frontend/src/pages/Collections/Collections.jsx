@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import ProductQuickView from '@/components/common/ProductQuickView/ProductQuickView';
 import Drawer from '@/components/common/Drawer/Drawer';
-import { ALL_PRODUCTS, FILTER_SIZES, FILTER_COLORS } from '@/data/mockData';
+import { FILTER_SIZES, FILTER_COLORS } from '@/data/mockData';
 import searchIcon from '@/assets/icons/search.svg';
 import { Link } from 'react-router-dom';
 import { useGetProductsQuery } from '@/store/actions/productActions';
@@ -31,9 +31,7 @@ export default function Collections() {
   const { data: apiData, isLoading } = useGetProductsQuery();
 
   const productsList = useMemo(() => {
-    return apiData?.products && apiData.products.length > 0
-      ? apiData.products
-      : ALL_PRODUCTS;
+    return apiData?.products ?? [];
   }, [apiData]);
 
   const [isColorExpanded, setIsColorExpanded] = useState(false);

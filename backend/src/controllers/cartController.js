@@ -46,7 +46,30 @@ const getCart = async (req, res) => {
       return res.status(404).json({ status: "FAILURE", message: "Cart not found" });
     }
 
-    res.status(200).json({ status: "SUCCESS", cart });
+    let subtotal = 0;
+    if (cart.items) {
+      cart.items.forEach(item => {
+        if (item.product && typeof item.product.price === 'number') {
+          subtotal += item.product.price * item.quantity;
+        }
+      });
+    }
+
+    const shippingCharge = 0;
+    const cartTotal = subtotal + shippingCharge;
+
+    const cartObj = cart.toObject();
+    cartObj.subtotal = subtotal;
+    cartObj.shippingCharge = shippingCharge;
+    cartObj.cartTotal = cartTotal;
+
+    res.status(200).json({
+      status: "SUCCESS",
+      cart: cartObj,
+      subtotal,
+      shippingCharge,
+      cartTotal
+    });
   } catch (error) {
     res.status(500).json({ status: "FAILURE", message: error.message });
   }

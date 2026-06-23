@@ -9,7 +9,7 @@ import './Cart.css';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { data, isLoading, refetch } = useGetCartQuery();
+  const { data, isLoading, isFetching, refetch } = useGetCartQuery();
   const [updateCartItem] = useUpdateCartItemMutation();
   const [removeCartItem] = useRemoveFromCartMutation();
   const [cartItems, setCartItems] = useState([]);
@@ -110,7 +110,8 @@ export default function Cart() {
   };
 
   const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
-  const cartTotal = cartItems.reduce((total, item) => total + (item.product?.price || 0) * (item.quantity || 0), 0);
+  const subtotal = data?.subtotal ?? data?.cart?.subtotal ?? 0;
+  const cartTotal = data?.cartTotal ?? data?.cart?.cartTotal ?? 0;
 
   if (isLoading) {
     return (
@@ -241,24 +242,23 @@ export default function Cart() {
                 
                 <div className="summary-row-item">
                   <span className="summary-row-label">SUBTOTAL</span>
-                  <span className="summary-row-value">₹{cartTotal.toFixed(2)}</span>
+                  <span className="summary-row-value">
+                    {isFetching ? <span className="shimmer-skeleton"></span> : `₹${subtotal.toFixed(2)}`}
+                  </span>
                 </div>
                 
                 <div className="summary-row-item">
                   <span className="summary-row-label">SHIPPING</span>
-                  <span className="summary-row-value free-shipping">FREE</span>
-                </div>
-
-                <div className="summary-row-item text-muted">
-                  <span className="summary-row-label">ESTIMATED TAXES</span>
-                  <span className="summary-row-value">--</span>
+                  <span className="summary-row-value shipping-subtxt-custom">Calculated at checkout</span>
                 </div>
 
                 <div className="summary-divider-line"></div>
 
                 <div className="summary-row-item summary-total-row">
                   <span className="summary-row-label">TOTAL</span>
-                  <span className="summary-row-value">₹{cartTotal.toFixed(2)}</span>
+                  <span className="summary-row-value">
+                    {isFetching ? <span className="shimmer-skeleton"></span> : `₹${cartTotal.toFixed(2)}`}
+                  </span>
                 </div>
 
                 <Button

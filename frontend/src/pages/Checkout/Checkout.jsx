@@ -5,6 +5,8 @@ import { getCartItemsWithProducts } from '@/data/mockData';
 import Button from '@/components/common/Button/Button';
 import Input from '@/components/common/Form/Input';
 import Select from '@/components/common/Form/Select';
+import Loader from '@/components/common/Loader/Loader';
+import { useGetCartQuery } from '@/store/actions/cartActions';
 import './Checkout.css';
 
 export default function Checkout() {
@@ -12,10 +14,11 @@ export default function Checkout() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('info');
-  const [cartItems] = useState(getCartItemsWithProducts);
-
-  const cartTotal = cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const { data, isLoading, isFetching } = useGetCartQuery();
+  const cartItems = data?.cart?.items || [];
+  const subtotal = data?.subtotal ?? data?.cart?.subtotal ?? 0;
+  const cartTotal = data?.cartTotal ?? data?.cart?.cartTotal ?? 0;
+  const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -70,6 +73,14 @@ export default function Checkout() {
       }
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="checkout-page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="checkout-page-container">
@@ -262,18 +273,18 @@ export default function Checkout() {
 
               <div className="checkout-products-list-custom">
                 {cartItems.map((item, idx) => (
-                  <div key={`${item.product.id}-${item.size}-${item.color}-${idx}`} className="checkout-summary-item-custom">
+                  <div key={`${item.product?._id || item.product?.id}-${item.size}-${item.color?.name || item.color}-${idx}`} className="checkout-summary-item-custom">
                     <div className="item-thumbnail-wrapper-custom">
-                      <img src={item.product.image} alt="" className="item-thumbnail-custom" />
+                      <img src={item.product?.image} alt="" className="item-thumbnail-custom" />
                     </div>
                     <div className="checkout-item-details-col-custom">
-                      <span className="checkout-item-name-custom">{item.product.name}</span>
+                      <span className="checkout-item-name-custom">{item.product?.name}</span>
                       <div className="checkout-item-specs-row-custom">
                         <div className="checkout-spec-box-custom">{item.size}</div>
                         <div
                           className="checkout-color-swatch-custom"
                           style={{
-                            backgroundColor: item.product.colors?.find(c => c.name.toLowerCase() === item.color.toLowerCase())?.hex || item.color
+                            backgroundColor: item.color?.hex || item.product?.colors?.find(c => c.name.toLowerCase() === (item.color?.name || item.color || '').toLowerCase())?.hex || item.color
                           }}
                         ></div>
                         <span className="checkout-qty-highlight-custom">
@@ -281,7 +292,7 @@ export default function Checkout() {
                         </span>
                       </div>
                     </div>
-                    <span className="item-price-custom">₹{(item.product.price * item.quantity).toFixed(2)}</span>
+                    <span className="item-price-custom">₹{((item.product?.price || 0) * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -290,7 +301,9 @@ export default function Checkout() {
 
               <div className="checkout-summary-row-custom">
                 <span className="row-label-custom">Subtotal</span>
-                <span className="row-value-custom">₹{cartTotal.toFixed(2)}</span>
+                <span className="row-value-custom">
+                  {isFetching ? <span className="shimmer-skeleton"></span> : `₹${subtotal.toFixed(2)}`}
+                </span>
               </div>
               <div className="checkout-summary-row-custom shipping-row-custom">
                 <span className="row-label-custom">Shipping</span>
@@ -301,7 +314,9 @@ export default function Checkout() {
 
               <div className="checkout-summary-row-custom checkout-total-row-custom">
                 <span className="row-label-custom">Total</span>
-                <span className="row-value-custom">₹{cartTotal.toFixed(2)}</span>
+                <span className="row-value-custom">
+                  {isFetching ? <span className="shimmer-skeleton"></span> : `₹${cartTotal.toFixed(2)}`}
+                </span>
               </div>
             </div>
           </div>

@@ -13,6 +13,13 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ status: "FAILURE", message: "Product image is required" });
     }
 
+    const parsedSizes = JSON.parse(sizes || "[]");
+    const parsedColors = JSON.parse(colors || "[]");
+
+    if (parsedSizes.length === 0 || parsedColors.length === 0) {
+      return res.status(400).json({ status: "FAILURE", message: "Size and Color are required" });
+    }
+
     const result = await cloudinary.uploader.upload(
       `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
       {
@@ -30,8 +37,8 @@ const createProduct = async (req, res) => {
       gender,
       status,
       description,
-      sizes: JSON.parse(sizes),
-      colors: JSON.parse(colors),
+      sizes: parsedSizes,
+      colors: parsedColors,
       image: result.secure_url,
     });
 
@@ -86,6 +93,13 @@ const updateProduct = async (req, res) => {
 
     const { name, price, category, gender, status, description, sizes, colors } = req.body;
 
+    const parsedSizes = sizes ? JSON.parse(sizes) : product.sizes;
+    const parsedColors = colors ? JSON.parse(colors) : product.colors;
+
+    if (parsedSizes.length === 0 || parsedColors.length === 0) {
+      return res.status(400).json({ status: "FAILURE", message: "Size and Color are required" });
+    }
+
     let imageUrl = product.image;
 
     if (req.file) {
@@ -106,8 +120,8 @@ const updateProduct = async (req, res) => {
     product.gender = gender || product.gender;
     product.status = status || product.status;
     product.description = description || product.description;
-    product.sizes = sizes ? JSON.parse(sizes) : product.sizes;
-    product.colors = colors ? JSON.parse(colors) : product.colors;
+    product.sizes = parsedSizes;
+    product.colors = parsedColors;
     product.image = imageUrl;
 
     const updatedProduct = await product.save();

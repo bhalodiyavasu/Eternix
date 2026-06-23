@@ -182,6 +182,16 @@ export default function Admin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!userInput.sizes || userInput.sizes.length === 0) {
+      showToast('error', 'PLEASE SELECT AT LEAST ONE SIZE.');
+      return;
+    }
+
+    if (!userInput.colorsList || userInput.colorsList.length === 0) {
+      showToast('error', 'PLEASE ADD AT LEAST ONE COLOR.');
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('name', userInput.name);

@@ -271,7 +271,7 @@ export default function Profile() {
 
                         <div className="order-summary-col">
                           <span className="order-col-lbl">TOTAL</span>
-                          <span className="order-col-val">${order.total}.00</span>
+                          <span className="order-col-val">₹{order.total.toFixed(2)}</span>
                         </div>
 
                         <div className="order-summary-col">
@@ -308,7 +308,7 @@ export default function Profile() {
                                 </div>
                                 <div className="order-item-math">
                                   <span className="order-item-qty">QTY: {item.quantity}</span>
-                                  <span className="order-item-subtotal">${item.product.price * item.quantity}.00</span>
+                                  <span className="order-item-subtotal">₹{(item.product.price * item.quantity).toFixed(2)}</span>
                                 </div>
                               </div>
                             ))}

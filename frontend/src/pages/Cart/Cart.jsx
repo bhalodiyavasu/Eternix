@@ -1,38 +1,124 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCartItemsWithProducts } from '@/data/mockData';
+import { useGetCartQuery, useUpdateCartItemMutation, useRemoveFromCartMutation } from '@/store/actions/cartActions';
 import Button from '@/components/common/Button/Button';
+import Loader from '@/components/common/Loader/Loader';
 import minusIcon from '@/assets/icons/minus.svg';
 import plusIcon from '@/assets/icons/plus.svg';
 import './Cart.css';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState(getCartItemsWithProducts);
+  const { data, isLoading, refetch } = useGetCartQuery();
+  const [updateCartItem] = useUpdateCartItemMutation();
+  const [removeCartItem] = useRemoveFromCartMutation();
+  const [cartItems, setCartItems] = useState([]);
 
-  const removeFromCart = (productId, size, color) => {
+  useEffect(() => {
+    if (data?.cart?.items) {
+      setCartItems(data.cart.items);
+    } else {
+      setCartItems([]);
+    }
+  }, [data]);
+
+  const removeFromCart = async (productId, size, color) => {
+    const colorName = typeof color === 'object' ? color.name : color;
+    const targetItem = cartItems.find(item => {
+      if (!item.product) return false;
+      const itemProductId = item.product._id || item.product.id;
+      const itemColorName = typeof item.color === 'object' ? item.color.name : item.color;
+      return itemProductId === productId && item.size === size && itemColorName === colorName;
+    });
+
+    if (!targetItem) return;
+
+    // Optimistic update locally
     setCartItems(prev =>
-      prev.filter(item =>
-        !(item.product.id === productId && item.size === size && item.color === color)
-      )
+      prev.filter(item => {
+        if (!item.product) return false;
+        const itemProductId = item.product._id || item.product.id;
+        const itemColorName = typeof item.color === 'object' ? item.color.name : item.color;
+        return !(itemProductId === productId && item.size === size && itemColorName === colorName);
+      })
     );
+
+    try {
+      const colorHex = typeof color === 'object' ? color.hex : (targetItem.product.colors?.find(c => c.name.toLowerCase() === color.toLowerCase())?.hex || color);
+      const colorObj = { name: colorName, hex: colorHex };
+
+      await removeCartItem({
+        productId,
+        size,
+        color: colorObj
+      }).unwrap();
+      refetch();
+    } catch (err) {
+      console.error("Failed to remove item from cart in backend:", err);
+      // Revert if API call fails
+      if (data?.cart?.items) {
+        setCartItems(data.cart.items);
+      }
+    }
   };
 
-  const updateQuantity = (productId, size, color, delta) => {
+  const updateQuantity = async (productId, size, color, delta) => {
+    const colorName = typeof color === 'object' ? color.name : color;
+    const targetItem = cartItems.find(item => {
+      if (!item.product) return false;
+      const itemProductId = item.product._id || item.product.id;
+      const itemColorName = typeof item.color === 'object' ? item.color.name : item.color;
+      return itemProductId === productId && item.size === size && itemColorName === colorName;
+    });
+
+    if (!targetItem) return;
+    const newQty = targetItem.quantity + delta;
+    if (newQty < 1) return;
+
+    // Update locally first for instantaneous feel
     setCartItems(prev =>
       prev.map(item => {
-        if (item.product.id === productId && item.size === size && item.color === color) {
-          const newQty = item.quantity + delta;
-          if (newQty < 1) return item;
+        if (!item.product) return item;
+        const itemProductId = item.product._id || item.product.id;
+        const itemColorName = typeof item.color === 'object' ? item.color.name : item.color;
+        if (itemProductId === productId && item.size === size && itemColorName === colorName) {
           return { ...item, quantity: newQty };
         }
         return item;
       })
     );
+
+    try {
+      // Find the hex color from colors list or fallback
+      const colorHex = typeof color === 'object' ? color.hex : (targetItem.product.colors?.find(c => c.name.toLowerCase() === color.toLowerCase())?.hex || color);
+      const colorObj = { name: colorName, hex: colorHex };
+
+      await updateCartItem({
+        productId,
+        quantity: newQty,
+        size,
+        color: colorObj
+      }).unwrap();
+      refetch();
+    } catch (err) {
+      console.error("Failed to update cart quantity in backend:", err);
+      // Revert local state to query data state
+      if (data?.cart?.items) {
+        setCartItems(data.cart.items);
+      }
+    }
   };
 
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const cartTotal = cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+  const cartTotal = cartItems.reduce((total, item) => total + (item.product?.price || 0) * (item.quantity || 0), 0);
+
+  if (isLoading) {
+    return (
+      <div className="cart-page-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="cart-page-container">
@@ -50,10 +136,9 @@ export default function Cart() {
       <div className="cart-layout">
         {cartItems.length === 0 ? (
           <div className="empty-cart-view">
-            <h2 className="empty-cart-message">YOUR CART IS CURRENTLY EMPTY.</h2>
-            <p className="empty-cart-desc">Add items from our collections to get started.</p>
+            <h2 className="empty-cart-message">NO PRODUCT ADDED IN CART</h2>
             <Button variant="outline" to="/collections">
-              CONTINUE SHOPPING
+              ADD PRODUCT
             </Button>
           </div>
         ) : (
@@ -67,16 +152,21 @@ export default function Cart() {
               </div>
 
               {cartItems.map((item, idx) => {
-                const itemTotal = item.product.price * item.quantity;
+                if (!item.product) return null;
+                const itemTotal = (item.product.price || 0) * (item.quantity || 0);
+                const colorName = typeof item.color === 'object' ? item.color.name : item.color;
+                const colorHex = typeof item.color === 'object' ? item.color.hex : (item.product.colors?.find(c => c.name.toLowerCase() === item.color.toLowerCase())?.hex || item.color);
+                const itemProductId = item.product._id || item.product.id;
+
                 return (
-                  <div key={`${item.product.id}-${item.size}-${item.color}-${idx}`} className="cart-item-row">
+                  <div key={`${itemProductId}-${item.size}-${colorName}-${idx}`} className="cart-item-row">
                     {/* Product Image and Details */}
                     <div className="cart-item-details-col">
                       <div className="cart-item-image-wrapper">
                         <img src={item.product.image} alt={item.product.name} className="cart-item-image" />
                       </div>
                       <div className="cart-item-info">
-                        <span className="cart-item-category">{item.product.tag}</span>
+                        <span className="cart-item-category">{(item.product.category || item.product.tag || '').toUpperCase()}</span>
                         <h3 className="cart-item-name">{item.product.name}</h3>
                         <div className="cart-item-specs-display">
                           <div className="spec-item">
@@ -88,15 +178,15 @@ export default function Cart() {
                             <span 
                               className="spec-color-swatch" 
                               style={{ 
-                                backgroundColor: item.product.colors?.find(c => c.name.toLowerCase() === item.color.toLowerCase())?.hex || item.color 
+                                backgroundColor: colorHex 
                               }}
-                              title={item.color}
+                              title={colorName}
                             ></span>
                           </div>
                         </div>
                         <Button
                           variant="unstyled-destructive"
-                          onClick={() => removeFromCart(item.product.id, item.size, item.color)}
+                          onClick={() => removeFromCart(itemProductId, item.size, item.color)}
                           aria-label="Remove item"
                         >
                           REMOVE
@@ -109,7 +199,7 @@ export default function Cart() {
                       <div className="cart-qty-selector">
                         <button
                           className={`qty-selector-btn ${item.quantity <= 1 ? 'disabled' : ''}`}
-                          onClick={() => updateQuantity(item.product.id, item.size, item.color, -1)}
+                          onClick={() => updateQuantity(itemProductId, item.size, item.color, -1)}
                           disabled={item.quantity <= 1}
                           aria-label="Decrease quantity"
                         >
@@ -118,7 +208,7 @@ export default function Cart() {
                         <span className="qty-selector-value">{item.quantity}</span>
                         <button
                           className="qty-selector-btn"
-                          onClick={() => updateQuantity(item.product.id, item.size, item.color, 1)}
+                          onClick={() => updateQuantity(itemProductId, item.size, item.color, 1)}
                           aria-label="Increase quantity"
                         >
                           <img src={plusIcon} alt="Increase" className="qty-btn-icon" />
@@ -128,9 +218,9 @@ export default function Cart() {
 
                     {/* Total Price for this Item */}
                     <div className="cart-item-total-col">
-                      <span className="cart-item-price">${itemTotal}.00</span>
+                      <span className="cart-item-price">₹{itemTotal.toFixed(2)}</span>
                       {item.quantity > 1 && (
-                        <span className="cart-item-unit-price">(${item.product.price}.00 EACH)</span>
+                        <span className="cart-item-unit-price">(₹{item.product.price.toFixed(2)} EACH)</span>
                       )}
                     </div>
                   </div>
@@ -151,7 +241,7 @@ export default function Cart() {
                 
                 <div className="summary-row-item">
                   <span className="summary-row-label">SUBTOTAL</span>
-                  <span className="summary-row-value">${cartTotal}.00</span>
+                  <span className="summary-row-value">₹{cartTotal.toFixed(2)}</span>
                 </div>
                 
                 <div className="summary-row-item">
@@ -168,7 +258,7 @@ export default function Cart() {
 
                 <div className="summary-row-item summary-total-row">
                   <span className="summary-row-label">TOTAL</span>
-                  <span className="summary-row-value">${cartTotal}.00</span>
+                  <span className="summary-row-value">₹{cartTotal.toFixed(2)}</span>
                 </div>
 
                 <Button

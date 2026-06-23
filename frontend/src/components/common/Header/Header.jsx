@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useGetCartQuery } from '@/store/actions/cartActions';
 import logoIcon from '@/assets/icons/logo.svg';
 import cartIcon from '@/assets/icons/cart.svg';
 import profileIcon from '@/assets/icons/profile.svg';
@@ -12,6 +13,9 @@ export default function Header() {
   const isHome = location.pathname === '/';
   const isCollections = location.pathname === '/collections';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data } = useGetCartQuery();
+
+  const cartCount = data?.cart?.items?.length || 0;
 
   const handleProfileClick = () => {
     const session = localStorage.getItem('userToken');
@@ -58,7 +62,7 @@ export default function Header() {
             <div className="circular-btn cart-btn" aria-label="Cart">
               <img src={cartIcon} alt="" className="dark-icon" />
             </div>
-            <div className="cart-badge-pill">3</div>
+            <div className="cart-badge-pill">{cartCount}</div>
           </Link>
           
           <button 

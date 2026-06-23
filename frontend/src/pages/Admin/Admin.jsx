@@ -304,7 +304,7 @@ export default function Admin() {
                 disabled={isLoading}
               />
               <Input
-                label="Price ($)"
+                label="Price (₹)"
                 type="number"
                 name="price"
                 value={userInput.price}
@@ -486,7 +486,7 @@ export default function Admin() {
                       {`${userInput.gender ? userInput.gender.toUpperCase() : 'SELECT GENDER'} / ${userInput.category ? userInput.category.toUpperCase() : 'SELECT CATEGORY'}`}
                     </div>
                     <h3 className="card-title">{userInput.name || 'PRODUCT NAME'}</h3>
-                    <div className="card-price">${userInput.price || '0'}</div>
+                    <div className="card-price">₹{userInput.price || '0'}</div>
 
                     {/* Size preview */}
                     <div className="preview-spec-section">
@@ -568,7 +568,7 @@ export default function Admin() {
                     <div className="inventory-name-col">
                       <div className="inventory-product-name">{p.name}</div>
                       <div className="inventory-product-desc">{p.description}</div>
-                      <div className="inventory-product-price">${p.price}</div>
+                      <div className="inventory-product-price">₹{p.price}</div>
                     </div>
                   </td>
                   <td>

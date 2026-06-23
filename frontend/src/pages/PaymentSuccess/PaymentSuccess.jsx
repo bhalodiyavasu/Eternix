@@ -77,7 +77,7 @@ export default function PaymentSuccess() {
                     </div>
                   </div>
                 </div>
-                <span className="summary-item-price">${item.product.price * item.quantity}</span>
+                <span className="summary-item-price">₹{(item.product.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -85,7 +85,7 @@ export default function PaymentSuccess() {
           <div className="summary-total-footer">
             <div className="summary-footer-row">
               <span>SUBTOTAL</span>
-              <span>${orderData.cartTotal}.00</span>
+              <span>₹{orderData.cartTotal.toFixed(2)}</span>
             </div>
             <div className="summary-footer-row">
               <span>SHIPPING</span>
@@ -93,7 +93,7 @@ export default function PaymentSuccess() {
             </div>
             <div className="summary-footer-row total-row-highlight">
               <span>TOTAL</span>
-              <span>${orderData.cartTotal}.00</span>
+              <span>₹{orderData.cartTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -183,8 +183,8 @@ export default function PaymentSuccess() {
                     <small>SIZE: {item.size} / COLOR: {item.color}</small>
                   </td>
                   <td>{item.quantity}</td>
-                  <td>${item.product.price}</td>
-                  <td>${item.product.price * item.quantity}</td>
+                  <td>₹{item.product.price.toFixed(2)}</td>
+                  <td>₹{(item.product.price * item.quantity).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -193,7 +193,7 @@ export default function PaymentSuccess() {
           <div className="receipt-totals">
             <div className="receipt-total-row">
               <span>SUBTOTAL:</span>
-              <span>${orderData.cartTotal}.00</span>
+              <span>₹{orderData.cartTotal.toFixed(2)}</span>
             </div>
             <div className="receipt-total-row">
               <span>SHIPPING:</span>
@@ -201,7 +201,7 @@ export default function PaymentSuccess() {
             </div>
             <div className="receipt-total-row final-amount">
               <span>TOTAL:</span>
-              <span>${orderData.cartTotal}.00</span>
+              <span>₹{orderData.cartTotal.toFixed(2)}</span>
             </div>
           </div>
 

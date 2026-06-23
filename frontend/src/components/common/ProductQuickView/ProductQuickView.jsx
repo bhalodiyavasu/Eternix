@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/contexts/ToastContext';
 import { useGetProductByIdQuery } from '@/store/actions/productActions';
-import { useAddToCartMutation } from '@/store/actions/cartActions';
+import { useAddToCartMutation, useGetCartQuery } from '@/store/actions/cartActions';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/common/Loader/Loader';
 import './ProductQuickView.css';
@@ -12,6 +12,7 @@ export default function ProductQuickView({ product: initialProduct, productId, o
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [addToCartApi, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { refetch: refetchCart } = useGetCartQuery();
 
   const { data: apiData, isLoading } = useGetProductByIdQuery(productId, {
     skip: !productId,
@@ -58,6 +59,7 @@ export default function ProductQuickView({ product: initialProduct, productId, o
       }).unwrap();
 
       if (res && res.status === 'SUCCESS') {
+        refetchCart();
         showToast('success', res.message || 'PRODUCT ADDED TO CART');
         return true;
       } else {
@@ -101,7 +103,7 @@ export default function ProductQuickView({ product: initialProduct, productId, o
                 <img src={product.image} alt={product.name} className="quick-view-image" />
                 <div className="quick-view-product-info">
                   <h4>{product.name}</h4>
-                  <p className="quick-view-price">${product.price}.00</p>
+                  <p className="quick-view-price">₹{product.price.toFixed(2)}</p>
                 </div>
               </div>
 
@@ -145,7 +147,7 @@ export default function ProductQuickView({ product: initialProduct, productId, o
                 <h5>ORDER SUMMARY</h5>
                 <div className="summary-row">
                   <span>1x {product.name}</span>
-                  <span>${product.price}.00</span>
+                  <span>₹{product.price.toFixed(2)}</span>
                 </div>
                 <div className="summary-row">
                   <span>Shipping</span>
@@ -154,7 +156,7 @@ export default function ProductQuickView({ product: initialProduct, productId, o
                 <div className="summary-divider"></div>
                 <div className="summary-row total">
                   <span>TOTAL</span>
-                  <span>${product.price}.00</span>
+                  <span>₹{product.price.toFixed(2)}</span>
                 </div>
               </div>
             </div>

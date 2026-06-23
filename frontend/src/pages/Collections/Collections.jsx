@@ -362,7 +362,7 @@ export default function Collections() {
             />
             <div className="price-display">
               <span>MAX PRICE:</span>
-              <span className="price-val">${filterData.priceRange}</span>
+              <span className="price-val">₹{filterData.priceRange}</span>
             </div>
           </div>
         )}
@@ -514,7 +514,7 @@ export default function Collections() {
             ))}
             {filterData.priceRange < maxProductPrice && (
               <span className="active-filter-tag">
-                Max Price: ${filterData.priceRange}
+                Max Price: ₹{filterData.priceRange}
                 <button className="clear-tag-btn" onClick={() => setFilterData(prev => ({ ...prev, priceRange: maxProductPrice }))} aria-label="Clear Price Limit">✕</button>
               </span>
             )}
@@ -540,7 +540,7 @@ export default function Collections() {
                       {product.tag || `${product.gender?.toUpperCase()} / ${product.category?.toUpperCase()}`}
                     </div>
                     <h3 className="card-title">{product.name}</h3>
-                    <div className="card-price">${product.price}</div>
+                    <div className="card-price">₹{product.price.toFixed(2)}</div>
                   </div>
                 </div>
               </div>

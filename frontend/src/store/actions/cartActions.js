@@ -9,6 +9,9 @@ export const cartApi = createApi({
     credentials: 'include',
   }),
   endpoints: (builder) => ({
+    getCart: builder.query({
+      query: () => '/cart',
+    }),
     addToCart: builder.mutation({
       query: (cartData) => ({
         url: '/cart',
@@ -16,7 +19,21 @@ export const cartApi = createApi({
         body: cartData,
       }),
     }),
+    updateCartItem: builder.mutation({
+      query: (cartData) => ({
+        url: '/cart',
+        method: 'PATCH',
+        body: cartData,
+      }),
+    }),
+    removeFromCart: builder.mutation({
+      query: (cartData) => ({
+        url: '/cart',
+        method: 'DELETE',
+        body: cartData,
+      }),
+    }),
   }),
 });
 
-export const { useAddToCartMutation } = cartApi;
+export const { useAddToCartMutation, useGetCartQuery, useUpdateCartItemMutation, useRemoveFromCartMutation } = cartApi;

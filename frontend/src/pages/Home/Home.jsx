@@ -148,7 +148,7 @@ export default function Home() {
                   <div className="product-info">
                     <div className="product-meta">
                       <span className="product-category">{prod.gender?.toUpperCase()} / {prod.category?.toUpperCase()}</span>
-                      <span className="product-price">$ {prod.price}</span>
+                      <span className="product-price">₹{prod.price.toFixed(2)}</span>
                     </div>
                     <h3 className="product-name">{prod.name}</h3>
                   </div>
@@ -197,7 +197,7 @@ export default function Home() {
                   <div className="product-info">
                     <div className="product-meta">
                       <span className="product-category">{prod.gender?.toUpperCase()} / {prod.category?.toUpperCase()}</span>
-                      <span className="product-price">$ {prod.price}</span>
+                      <span className="product-price">₹{prod.price.toFixed(2)}</span>
                     </div>
                     <h3 className="product-name">{prod.name}</h3>
                   </div>

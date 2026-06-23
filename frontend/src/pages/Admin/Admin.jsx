@@ -8,7 +8,8 @@ import Textarea from '@/components/common/Form/Textarea';
 import FileUpload from '@/components/common/Form/FileUpload';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/common/Loader/Loader';
-import { useCreateProductMutation, useUpdateProductMutation, useGetProductsQuery } from '@/store/actions/productActions';
+import Modal from '@/components/common/Modal/Modal';
+import { useCreateProductMutation, useUpdateProductMutation, useGetProductsQuery, useDeleteProductMutation } from '@/store/actions/productActions';
 import { useToast } from '@/contexts/ToastContext';
 import './Admin.css';
 
@@ -18,9 +19,11 @@ export default function Admin() {
   const { showToast } = useToast();
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
-  const isLoading = isCreating || isUpdating;
-  const { data: apiProductsData, isLoading: isProductsLoading } = useGetProductsQuery();
+  const isLoading = isCreating || isUpdating || isDeleting;
+  const [productToDelete, setProductToDelete] = useState(null);
+  const { data: apiProductsData, isLoading: isProductsLoading, refetch } = useGetProductsQuery();
 
   const inventoryProducts = useMemo(() => {
     return apiProductsData?.products ?? [];
@@ -80,6 +83,27 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    try {
+      const res = await deleteProduct(productToDelete._id || productToDelete.id).unwrap();
+      if (res && res.status === 'SUCCESS') {
+        showToast('success', res.message || 'PRODUCT DELETED SUCCESSFULLY');
+        refetch();
+      } else {
+        showToast('error', res?.message || 'FAILED TO DELETE PRODUCT.');
+      }
+    } catch (err) {
+      showToast('error', err.data?.message || err.message || 'FAILED TO DELETE PRODUCT.');
+    } finally {
+      setProductToDelete(null);
+    }
+  };
+
   const [imagePreview, setImagePreview] = useState('');
 
   const [userInput, setUserInput] = useState({
@@ -103,6 +127,13 @@ export default function Admin() {
 
   const handleColorAdd = () => {
     if (!colorInput.name.trim()) return;
+    const exists = userInput.colorsList.some(
+      (c) => c.name.toUpperCase() === colorInput.name.trim().toUpperCase()
+    );
+    if (exists) {
+      showToast('error', 'COLOR ALREADY ADDED.');
+      return;
+    }
     setUserInput(prev => ({
       ...prev,
       colorsList: [...prev.colorsList, { name: colorInput.name.toUpperCase(), hex: colorInput.hex }]
@@ -174,6 +205,7 @@ export default function Admin() {
 
       if (res && res.status === 'SUCCESS') {
         showToast('success', res.message || (editingProductId ? 'PRODUCT UPDATED SUCCESSFULLY' : 'PRODUCT CREATED SUCCESSFULLY'));
+        refetch();
         
         // Reset the form
         setUserInput({
@@ -397,8 +429,8 @@ export default function Admin() {
               {/* Added Colors Tags */}
               {userInput.colorsList.length > 0 && (
                 <div className="colors-preview-tags">
-                  {userInput.colorsList.map(c => (
-                    <span className="color-preview-tag" key={c.name}>
+                  {userInput.colorsList.map((c, idx) => (
+                    <span className="color-preview-tag" key={`${c.name}-${idx}`}>
                       <span className="tag-color-swatch" style={{ backgroundColor: c.hex }} />
                       <span className="tag-color-name">{c.name}</span>
                       <button 
@@ -469,9 +501,9 @@ export default function Admin() {
                       <div className="preview-spec-section">
                         <span className="preview-spec-label">COLORS:</span>
                         <div className="preview-colors-row">
-                          {userInput.colorsList.map(c => (
+                          {userInput.colorsList.map((c, idx) => (
                             <span 
-                              key={c.name} 
+                              key={`${c.name}-${idx}`} 
                               className="preview-color-dot" 
                               style={{ backgroundColor: c.hex }} 
                               title={c.name}
@@ -550,9 +582,9 @@ export default function Admin() {
                       <div>
                         <span className="specs-label">COLORS:</span>{' '}
                         <div className="specs-colors-row">
-                          {p.colors && p.colors.map(c => (
+                          {p.colors && p.colors.map((c, idx) => (
                             <span 
-                              key={c.name} 
+                              key={`${c.name}-${idx}`} 
                               className="specs-color-dot" 
                               style={{ backgroundColor: c.hex }} 
                               title={c.name}
@@ -579,6 +611,8 @@ export default function Admin() {
                       </Button>
                       <Button 
                         variant="unstyled-destructive"
+                        onClick={() => handleDeleteClick(p)}
+                        disabled={isLoading}
                       >
                         DELETE
                       </Button>
@@ -592,6 +626,36 @@ export default function Admin() {
         </div>
         )}
       </div>
+
+      {/* DELETE CONFIRMATION DIALOG MODAL */}
+      {productToDelete && (
+        <Modal title="CONFIRM DELETE" onClose={() => setProductToDelete(null)}>
+          <div className="delete-confirm-dialog">
+            <p className="dialog-message">
+              ARE YOU SURE YOU WANT TO DELETE THE PRODUCT "{productToDelete.name.toUpperCase()}"? THIS ACTION CANNOT BE UNDONE.
+            </p>
+            
+            <div className="dialog-actions-row">
+              <Button
+                type="button" 
+                variant="outline"
+                onClick={() => setProductToDelete(null)}
+                disabled={isDeleting}
+              >
+                CANCEL
+              </Button>
+              <Button
+                type="button" 
+                variant="destructive"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'DELETING...' : 'DELETE'}
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

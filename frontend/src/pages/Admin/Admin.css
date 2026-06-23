@@ -658,3 +658,36 @@
   color: #888;
   text-transform: uppercase;
 }
+
+/* Delete Confirmation Dialog */
+.delete-confirm-dialog {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-message {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-gray-dark);
+  margin: 0 0 30px 0;
+  text-align: left;
+}
+
+.dialog-actions-row {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.dialog-actions-row .app-button {
+  min-width: 128px;
+}
+
+.dialog-actions-row .app-button--outline {
+  background-color: transparent;
+}
+
+.dialog-actions-row .app-button--outline:hover {
+  background-color: var(--color-gray-light, #f5f5f5);
+}

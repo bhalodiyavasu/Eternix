@@ -13,7 +13,6 @@ export default function Checkout() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('info');
   const { data, isLoading, isFetching } = useGetCartQuery();
   const { data: profileData } = useGetProfileQuery();
   const [createOrder] = useCreateOrderMutation();
@@ -62,15 +61,6 @@ export default function Checkout() {
       formData.city.trim() !== '' &&
       formData.postalCode.trim() !== ''
     );
-  };
-
-  const handleContinueToPayment = (e) => {
-    e.preventDefault();
-    if (!isFormValid()) {
-      showToast('warning', 'PLEASE FILL IN ALL REQUIRED DETAILS BEFORE PROCEEDING.');
-      return;
-    }
-    setActiveTab('payment');
   };
 
   const handleCompletePayment = async () => {
@@ -136,29 +126,9 @@ export default function Checkout() {
         </div>
       ) : (
         <div className="checkout-layout">
-          {/* Left Form: Tabbed panel */}
+          {/* Left Form */}
           <div className="checkout-form-section">
-            <div className="checkout-tabs-header-custom">
-              <button
-                type="button"
-                className={`tab-nav-btn-custom ${activeTab === 'info' ? 'active' : ''}`}
-                onClick={() => setActiveTab('info')}
-              >
-                INFORMATION
-              </button>
-              <button
-                type="button"
-                className={`tab-nav-btn-custom ${activeTab === 'payment' ? 'active' : ''}`}
-                onClick={() => setActiveTab('payment')}
-                disabled={!isFormValid()}
-              >
-                PAYMENT
-              </button>
-            </div>
-
-            {/* Information Tab View */}
-            {activeTab === 'info' && (
-              <form onSubmit={handleContinueToPayment} className="checkout-form-block-custom">
+            <form onSubmit={(e) => { e.preventDefault(); if (!isFormValid()) { showToast('warning', 'PLEASE FILL IN ALL REQUIRED DETAILS BEFORE PROCEEDING.'); return; } handleCompletePayment(); }} className="checkout-form-block-custom">
                 <h3 className="form-section-title-custom">CONTACT INFO</h3>
                 <div className="form-row-custom">
                   <Input 
@@ -238,52 +208,13 @@ export default function Checkout() {
 
                 <div className="checkout-btn-row-custom">
                   <Button type="submit" variant="solid" layout="split">
-                    <span>Payment</span>
+                    <span>Pay Now</span>
                     <svg width="48" height="16" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M0 8H47M47 8L39 1M47 8L39 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Button>
                 </div>
               </form>
-            )}
-
-            {/* Payment Tab View */}
-            {activeTab === 'payment' && (
-              <div className="checkout-form-block-custom payment-tab-block-custom">
-                <h3 className="form-section-title-custom">PAYMENT METHOD</h3>
-
-                <div className="razorpay-payment-container-custom">
-                  <div className="razorpay-logo-area-custom">
-                    <span className="rp-badge-custom">SECURE</span>
-                    <h4 className="rp-title-custom">RAZORPAY SECURE</h4>
-                  </div>
-                  <p className="razorpay-desc-custom">
-                    Pay securely using credit cards, debit cards, UPI, netbanking, or wallets via Razorpay.
-                  </p>
-
-                  <div className="razorpay-graphic-card-custom">
-                    <div className="card-chip-custom"></div>
-                    <div className="card-logo-custom">RAZORPAY</div>
-                    <div className="card-number-custom">•••• •••• •••• XXXX</div>
-                    <div className="card-holder-custom">{(formData.fullName || '').toUpperCase()}</div>
-                  </div>
-
-                  <div className="checkout-btn-row-custom payment-btn-row-custom">
-                    <Button
-                      type="button"
-                      variant="solid"
-                      layout="split"
-                      onClick={handleCompletePayment}
-                    >
-                      <span>Pay Now</span>
-                      <svg width="48" height="16" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 8H47M47 8L39 1M47 8L39 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Right Column: Sticky Order Summary */}

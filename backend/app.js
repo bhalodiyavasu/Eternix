@@ -18,10 +18,10 @@ app.use(express.json());
 app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://127.0.0.1:5173',
   'http://192.168.2.153:5173',
-  'https://vaasu.xyz',
-  'https://www.vaasu.xyz',
-  'https://eternix.onrender.com',
+  'https://eternix.vaasu.xyz',
+  'https://www.eternix.vaasu.xyz',
   'https://api.vaasu.xyz',
   process.env.FRONTEND_URL
 ].filter(Boolean);
@@ -30,7 +30,7 @@ app.use(
   cores({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
+      if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
         return callback(null, true);
       }
       return callback(null, false);

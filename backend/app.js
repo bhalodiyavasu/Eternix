@@ -19,6 +19,10 @@ app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:5173',
   'http://192.168.2.153:5173',
+  'https://vaasu.xyz',
+  'https://www.vaasu.xyz',
+  'https://eternix.onrender.com',
+  'https://api.vaasu.xyz',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -29,7 +33,7 @@ app.use(
       if (allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
         return callback(null, true);
       }
-      return callback(new Error('Not allowed by CORS'));
+      return callback(null, false);
     },
     credentials: true,
   })

@@ -1,10 +1,10 @@
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, Navigate } from 'react-router-dom';
 import { useVerifySessionQuery } from '@/store/actions/paymentActions';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/common/Loader/Loader';
-import './PaymentSuccess.css';
+import './PaymentRecipt.css';
 
-export default function PaymentSuccess() {
+export default function PaymentRecipt() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
 
@@ -33,12 +33,7 @@ export default function PaymentSuccess() {
   };
 
   if (!sessionId || isError) {
-    return (
-      <div className="success-page-container success-error-view">
-        <h2>Invalid or expired session.</h2>
-        <Link to="/collections">GO TO COLLECTIONS</Link>
-      </div>
-    );
+    return <Navigate to="/" replace />;
   }
 
   if (isLoading || !data || !data.order) {

@@ -133,7 +133,7 @@ export default function Cart() {
       navigate('/auth', { state: { from: '/cart' } });
       return;
     }
-    navigate('/checkout');
+    navigate('/checkout', { state: { fromCart: true } });
   };
 
   const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);

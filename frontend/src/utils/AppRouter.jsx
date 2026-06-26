@@ -6,7 +6,7 @@ import Home from '@/pages/Home/Home';
 import Collections from '@/pages/Collections/Collections';
 import Cart from '@/pages/Cart/Cart';
 import Checkout from '@/pages/Checkout/Checkout';
-import PaymentSuccess from '@/pages/PaymentSuccess/PaymentSuccess';
+import PaymentRecipt from '@/pages/PaymentRecipt/PaymentRecipt';
 import Auth from '@/pages/Auth/Auth';
 import Profile from '@/pages/Profile/Profile';
 import Admin from '@/pages/Admin/Admin';
@@ -14,12 +14,33 @@ import AdminLogin from '@/pages/Admin/AdminLogin';
 import NotFound from '@/pages/NotFound/NotFound';
 import Loader from '@/components/common/Loader/Loader';
 
-// Wrapper for routes that require authentication
+// Wrapper for routes that require authentication and flow verification
 function ProtectedRoute({ children }) {
   const session = localStorage.getItem('userToken');
+  const location = useLocation();
+
   if (!session) {
     return <Navigate to="/auth" replace />;
   }
+
+  // Checkout flow gate
+  if (location.pathname === '/checkout') {
+    const isAllowed = location.state?.fromCart;
+    const navType = window.performance?.getEntriesByType?.('navigation')?.[0]?.type;
+    const isReload = navType === 'reload' || navType === 'back_forward';
+    if (!isAllowed && !isReload) {
+      return <Navigate to="/" replace />;
+    }
+  }
+
+  // Payment receipt gate
+  if (location.pathname === '/payment-recipt') {
+    const sessionId = new URLSearchParams(location.search).get('session_id');
+    if (!sessionId) {
+      return <Navigate to="/" replace />;
+    }
+  }
+
   return children;
 }
 
@@ -51,7 +72,7 @@ function ScrollToHashElement() {
 
 function AppLayout({ children }) {
   const location = useLocation();
-  const isMinimal = location.pathname === '/checkout' || location.pathname === '/payment-success' || location.pathname === '/auth' || location.pathname === '/admin' || location.pathname === '/admin/login';
+  const isMinimal = location.pathname === '/checkout' || location.pathname === '/payment-recipt' || location.pathname === '/auth' || location.pathname === '/admin' || location.pathname === '/admin/login';
 
   return (
     <div className="app-wrapper">
@@ -91,10 +112,10 @@ export default function AppRouter() {
             } 
           />
           <Route 
-            path="/payment-success" 
+            path="/payment-recipt" 
             element={
               <ProtectedRoute>
-                <PaymentSuccess />
+                <PaymentRecipt />
               </ProtectedRoute>
             } 
           />

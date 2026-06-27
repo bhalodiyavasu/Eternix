@@ -74,7 +74,7 @@ export default function Header() {
               onClick={handleProfileClick}
             >
               {userAvatar ? (
-                <img src={userAvatar} alt="Profile" className="header-avatar-img" />
+                <img src={userAvatar} alt="Profile" className="header-avatar-img" referrerPolicy="no-referrer" />
               ) : (
                 <img src={profileIcon} alt="" className="inverted-icon" />
               )}

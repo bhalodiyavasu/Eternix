@@ -131,7 +131,7 @@ export default function Profile() {
           <div className="profile-card-square">
             <div className="profile-avatar-square">
               {profileResponse?.user?.avatar ? (
-                <img src={profileResponse.user.avatar} alt="Profile" className="profile-avatar-img" />
+                <img src={profileResponse.user.avatar} alt="Profile" className="profile-avatar-img" referrerPolicy="no-referrer" />
               ) : (
                 profileResponse?.user?.username ? profileResponse.user.username.substring(0, 2).toUpperCase() : 'US'
               )}

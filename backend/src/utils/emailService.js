@@ -1,10 +1,11 @@
 const { buildWelcomeHtml } = require("../templates/welcomeTemplate");
+const BREVO_API_URL = process.env.BREVO_API_URL || "https://api.brevo.com/v3/smtp/email";
 
 // Subject ma name lagadvu ho to normal rakhvu puncutations vagar
 const sendWelcomeEmail = async (toEmail, username) => {
   const subjectText = `Access your Eternix account, ${username}`;
 
-  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+  const response = await fetch(BREVO_API_URL, {
     method: "POST",
     headers: {
       "api-key": process.env.BREVO_API_KEY,

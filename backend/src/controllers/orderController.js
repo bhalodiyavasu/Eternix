@@ -1,6 +1,16 @@
 const Order = require("../models/Order");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 const { generateReceiptHTML } = require("../templates/receiptTemplate");
+
+async function launchBrowser() {
+  return puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
+  });
+}
 
 const getMyOrders = async (req, res) => {
   try {
@@ -25,10 +35,7 @@ const downloadReceipt = async (req, res) => {
 
     const html = generateReceiptHTML(order);
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-    });
+    browser = await launchBrowser();
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "domcontentloaded" });
@@ -63,10 +70,7 @@ const downloadReceiptBySession = async (req, res) => {
 
     const html = generateReceiptHTML(order);
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-    });
+    browser = await launchBrowser();
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "domcontentloaded" });

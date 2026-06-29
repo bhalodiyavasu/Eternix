@@ -87,7 +87,7 @@ export default function Auth() {
           ) : (
             <div className="login-form-wrapper">
               <div className="login-logo-container" onClick={() => navigate('/')}>
-                <img src={logoIcon} alt="Eternix Logo" className="login-logo-img" />
+                <img src={logoIcon} alt="Eternix Logo" className="login-logo-img notranslate" translate="no" />
               </div>
 
               <div className="login-form-block animate-fade-in">

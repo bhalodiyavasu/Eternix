@@ -119,7 +119,7 @@ export default function Home() {
 
             {/* Block 2: Eternix Brand Values */}
             <div className="showcase-card brand-card">
-              <div className="brand-header">ETERNIX LABELS</div>
+              <div className="brand-header notranslate" translate="no">ETERNIX LABELS</div>
               <div className="brand-list">
                 <span className="brand-tag">Minimal</span>
                 <span className="brand-tag">Boxy</span>
@@ -193,7 +193,7 @@ export default function Home() {
 
           <div className="agency-description-footer">
             <p className="agency-desc-text">
-              <strong>Eternix</strong> is the most active design-driven fashion label around the world. We have been working with premium mills and craftspeople for about a year. So, Let's begin the journey.
+              <strong className="notranslate" translate="no">Eternix</strong> is the most active design-driven fashion label around the world. We have been working with premium mills and craftspeople for about a year. So, Let's begin the journey.
             </p>
           </div>
         </div>

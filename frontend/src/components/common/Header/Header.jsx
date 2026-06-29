@@ -55,7 +55,7 @@ export default function Header() {
 
         <div className="header-center">
           <Link to="/" className="logo-container" aria-label="Home">
-            <img src={logoIcon} className="logo-img" alt="Eternix Logo" />
+            <img src={logoIcon} className="logo-img notranslate" translate="no" alt="Eternix Logo" />
           </Link>
         </div>
 

@@ -161,3 +161,46 @@ html {
       background-position: -200% 0;
     }
   }
+
+  /* Aggressive Google Translate UI element hiding to ensure no popups or banners ever show */
+  .goog-te-banner-frame.skiptranslate,
+  .goog-te-banner-frame,
+  iframe.goog-te-banner-frame,
+  .goog-te-banner,
+  .goog-te-gadget,
+  .goog-te-gadget-icon,
+  #goog-gt-tt,
+  #goog-gt-tt.skiptranslate,
+  .goog-te-spinner-pos,
+  body > .skiptranslate {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+  }
+
+  body {
+    top: 0px !important;
+    position: static !important;
+  }
+
+  /* Hide original Google Translate widget dropdown */
+  #google_translate_element {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Hide popups that show on hover of translated text */
+  .goog-tooltip,
+  .goog-tooltip:hover,
+  .goog-tooltip-cloned,
+  .goog-tooltip-cloned:hover,
+  .goog-text-highlight {
+    display: none !important;
+    visibility: hidden !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+

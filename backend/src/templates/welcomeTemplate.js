@@ -1,7 +1,7 @@
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 const buildWelcomeHtml = (username) => {
-  const cleanUsername = (username || "VASU").toUpperCase();
+  const cleanUsername = (username || "THERE").toUpperCase();
   return `
 <!DOCTYPE html>
 <html>
